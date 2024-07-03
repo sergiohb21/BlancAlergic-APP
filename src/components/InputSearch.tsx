@@ -5,10 +5,7 @@ import { arrayAlergias as totalAlergias, AlergiaType } from "../const/alergias";
 function InputSearch() {
   const [input, setInput] = React.useState("");
   const [arrayAlergias] = React.useState<AlergiaType[]>(totalAlergias);
-  const [isTableActive, setIsTableActive] = React.useState(false);
-  const [arrayAlergiasFiltered, setArrayAlergiasFiltered] = React.useState<
-    AlergiaType[]
-  >([]);
+  const [arrayAlergiasFiltered, setArrayAlergiasFiltered] = React.useState<AlergiaType[]>([]);
 
   useEffect(() => {
     const handleSearch = (inputValue: string) => {
@@ -19,17 +16,13 @@ function InputSearch() {
         )
       );
     };
-    if (input.length > 3 && !isTableActive || input.length > 3 && isTableActive) {
-      handleSearch(input);
-      setIsTableActive(true);
-    }
 
-    if(input.length === 0 && isTableActive) {
+    if (input.length > 3) {
       handleSearch(input);
-      setIsTableActive(false);
+    } else {
+      setArrayAlergiasFiltered([]);
     }
-
-  }, [input, arrayAlergias, isTableActive]);
+  }, [input, arrayAlergias]);
 
   return (
     <>
@@ -42,9 +35,13 @@ function InputSearch() {
         />
         <label>Consulta un alimento</label>
       </div>
-      {arrayAlergiasFiltered.length > 0 && (
-        <Table listaAlergias={arrayAlergiasFiltered} />
-      )}
+      {input.length > 3 ? (
+        arrayAlergiasFiltered.length > 0 ? (
+          <Table listaAlergias={arrayAlergiasFiltered} />
+        ) : (
+          <p>Estas de suerte, Blanca no es alérgica al <strong>{input}</strong>.</p>
+        )
+      ) : null}
     </>
   );
 }

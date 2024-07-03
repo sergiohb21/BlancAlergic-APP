@@ -61,6 +61,13 @@ function Layout({ children }: LayoutProps) {
                 buttonAction={handleEmergencia}
                 buttonText="Protocolo de Emergencia"
               />
+              <CardVideo
+                videoPath="/assets/video.mp4"
+                titleText="Tabla de Alergias"
+                infoText="Descubre una tabla con todas las alergias de Blanca."
+                buttonAction={handleEmergencia}
+                buttonText="Ver Tabla"
+              />
             </>
           )}
         </div>

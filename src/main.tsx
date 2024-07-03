@@ -14,6 +14,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/" element={<Outlet />}/>
           <Route path="/buscarAlergias" element={<InputSearch />} />
           <Route path="/emergencias" element={<InputSearch />} />
+          <Route path="/tablaAlergias" element={<InputSearch />} />
         </Routes>
       </Layout>
     </Router>
