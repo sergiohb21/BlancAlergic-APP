@@ -12,7 +12,7 @@ function Layout({ children }: LayoutProps) {
   const [theme, setTheme] = useState<"dark" | "white">("dark");
 
   const handleInicio = () => {
-    navigate("/");
+    navigate("/BlancAlergic-APP/");
   };
 
   const handleConsultaAlergias = () => {
@@ -32,6 +32,7 @@ function Layout({ children }: LayoutProps) {
       document.body.className === "dark" ? "white" : "dark";
     setTheme(theme === "dark" ? "white" : "dark");
   };
+  
 
   const handleShareWhatsApp = () => {
     window.open(
@@ -58,24 +59,24 @@ function Layout({ children }: LayoutProps) {
       <main className="responsive padding-top">
         <div className="responsive">
           {children}
-          {location.pathname === "/" && (
+          {location.pathname === "/BlancAlergic-APP/" && (
             <>
               <CardVideo
-                imgPath="/img/card-1.jpeg"
+                imgPath="./img/card-1.jpeg"
                 titleText="Tabla de Alergias"
                 infoText="Descubre una tabla con todas las alergias de Blanca."
                 buttonAction={handleTablaAlergias}
                 buttonText="Ver Tabla"
               />
               <CardVideo
-                imgPath="/img/card-2.jpeg"
+                imgPath="./img/card-2.jpeg"
                 titleText="Emergencia"
                 infoText="¡Blanca, no te preocupes! Si has comido algo que te hace ver estrellas, sigue este protocolo y estarás lista para la próxima aventura."
                 buttonAction={handleEmergencia}
                 buttonText="Protocolo de Emergencia"
               />
               <CardVideo
-                imgPath="/img/card-1.jpeg"
+                imgPath="./img/card-1.jpeg"
                 titleText="Consultar Alergias"
                 infoText="Blanca, ¿sientes que un polvito mágico te hace estornudar sin parar? Averigua si es una alergia o simplemente la magia de la vida diaria."
                 buttonAction={handleConsultaAlergias}

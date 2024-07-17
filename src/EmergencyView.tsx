@@ -15,7 +15,7 @@ function EmergencyView(): JSX.Element {
 
   const steps: Step[] = [
     {
-      imgPath: '/img/call-112.png',
+      imgPath: './img/call-112.jpg',
       titleText: 'Llamar al 112',
       infoText: 'En caso de una reacción alérgica grave, lo primero que debe hacer es llamar al 112 para solicitar ayuda médica de emergencia.',
       moreInfo: 'Marcar el 112 conectará directamente con los servicios de emergencia.',
@@ -23,7 +23,7 @@ function EmergencyView(): JSX.Element {
       buttonText: 'Llamar',
     },
     {
-      imgPath: '/images/identify-symptoms.png',
+      imgPath: './img/identify-symptoms.png',
       titleText: 'Identificar Síntomas',
       infoText: 'Revise si la persona tiene síntomas de una reacción alérgica grave, como dificultad para respirar, hinchazón de la cara o labios, o erupciones en la piel.',
       moreInfo: 'Los síntomas pueden variar, pero incluyen hinchazón, urticaria, dificultad para respirar y anafilaxia.',
@@ -31,7 +31,7 @@ function EmergencyView(): JSX.Element {
       buttonText: 'Más Información',
     },
     {
-      imgPath: '/images/epi-pen.png',
+      imgPath: '/img/epi-pen.jpg',
       titleText: 'Usar EpiPen',
       infoText: 'Si la persona tiene un EpiPen, administre la inyección de adrenalina en el muslo exterior. Esto puede ayudar a reducir los síntomas mientras espera la llegada de la ayuda médica.',
       moreInfo: 'Asegúrese de seguir las instrucciones del EpiPen y mantenga la calma.',
@@ -39,7 +39,7 @@ function EmergencyView(): JSX.Element {
       buttonText: 'Más Información',
     },
     {
-      imgPath: '/images/wait-help.png',
+      imgPath: './img/wait-help.jpg',
       titleText: 'Esperar la Ayuda',
       infoText: 'Mantenga a la persona cómoda y en una posición que facilite la respiración mientras espera la llegada de los servicios de emergencia.',
       moreInfo: 'Intente mantener a la persona tranquila y vigilada en todo momento.',

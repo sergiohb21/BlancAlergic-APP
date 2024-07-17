@@ -13,7 +13,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <Router>
       <Layout>
         <Routes>
-          <Route path="/" element={<Outlet />}/>
+          <Route path="/BlancAlergic-APP/" element={<Outlet />}/>
           <Route path="/buscarAlergias" element={<InputSearch />} />
           <Route path="/emergencias" element={<EmergencyView />} />
           <Route path="/tablaAlergias" element={<TableView />} />
