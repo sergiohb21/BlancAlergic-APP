@@ -36,7 +36,7 @@ function Layout({ children }: LayoutProps) {
 
   const handleShareWhatsApp = () => {
     window.open(
-      `whatsapp://send?text=${encodeURIComponent(window.location.href)}`
+      `whatsapp://send?text=${encodeURIComponent("https://sergiohb21.github.io/BlancAlergic-APP/")}`
     );
   };
 
