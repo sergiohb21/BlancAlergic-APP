@@ -62,21 +62,21 @@ function Layout({ children }: LayoutProps) {
           {location.pathname === "/BlancAlergic-APP/" && (
             <>
               <CardVideo
-                imgPath="./image/card-1.jpeg"
+                imgPath="./Image/card-1.jpeg"
                 titleText="Tabla de Alergias"
                 infoText="Descubre una tabla con todas las alergias de Blanca."
                 buttonAction={handleTablaAlergias}
                 buttonText="Ver Tabla"
               />
               <CardVideo
-                imgPath="./image/card-2.jpeg"
+                imgPath="./Image/card-2.jpeg"
                 titleText="Emergencia"
                 infoText="¡Blanca, no te preocupes! Si has comido algo que te hace ver estrellas, sigue este protocolo y estarás lista para la próxima aventura."
                 buttonAction={handleEmergencia}
                 buttonText="Protocolo de Emergencia"
               />
               <CardVideo
-                imgPath="./image/card-1.jpeg"
+                imgPath="./Image/card-1.jpeg"
                 titleText="Consultar Alergias"
                 infoText="Blanca, ¿sientes que un polvito mágico te hace estornudar sin parar? Averigua si es una alergia o simplemente la magia de la vida diaria."
                 buttonAction={handleConsultaAlergias}
