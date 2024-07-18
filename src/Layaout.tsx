@@ -3,6 +3,7 @@ import { useState } from "react";
 import CardVideo from "./components/CardImg";
 import card1Image from "/Image/card-1.jpeg";
 import card2Image from "/Image/card-2.jpeg";
+import card3Image from "/Image/card-3.jpeg";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -70,7 +71,7 @@ function Layout({ children }: LayoutProps) {
           {location.pathname === "/" && (
             <>
               <CardVideo
-                imgPath={card1Image}
+                imgPath={card3Image}
                 titleText="Tabla de Alergias"
                 infoText="¿Estás preparando un plato para Blanca y tienes dudas sobre sus alergias? Conoce todas sus alergias con un solo clic y evita cualquier sorpresa indeseada."
                 buttonAction={handleTablaAlergias}
