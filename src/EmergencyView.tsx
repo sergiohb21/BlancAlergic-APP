@@ -2,8 +2,8 @@ import { useState } from "react";
 import CardVideo from "./components/CardImg";
 import call112Image from "../dist/Image/call-112.jpg";
 import identifySymptomsImage from "../dist/Image/identify-symptoms.png";
-import epiPenImage from "../dist/Image/epi-pen.jpg";
-import waitHelpImage from "../dist/Image/wait-help.jpg";
+import epiPenImage from "/Image/epi-pen.jpg";
+import waitHelpImage from "/Image/wait-help.jpg";
 
 interface Step {
   imgPath: string;

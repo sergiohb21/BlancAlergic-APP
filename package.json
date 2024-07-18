@@ -1,7 +1,7 @@
 {
   "name": "blancalergic-app",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -29,5 +29,6 @@
     "typescript": "^5.2.2",
     "vite": "^5.3.1",
     "gh-pages": "^5.0.0"
-  }
+  },
+  "homepage": "https://sergiohb21.github.io/BlancAlergic-APP"
 }

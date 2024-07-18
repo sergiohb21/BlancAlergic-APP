@@ -1,8 +1,8 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import CardVideo from "./components/CardImg";
-import card1Image from "../dist/Image/card-1.jpeg";
-import card2Image from "../dist/Image/card-2.jpeg";
+import card1Image from "/Image/card-1.jpeg";
+import card2Image from "/Image/card-2.jpeg";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,19 +14,19 @@ function Layout({ children }: LayoutProps) {
   const [theme, setTheme] = useState<"dark" | "white">("dark");
 
   const handleInicio = () => {
-    navigate("/BlancAlergic-APP/");
+    navigate("/");
   };
 
   const handleConsultaAlergias = () => {
-    navigate("/BlancAlergic-APP/buscarAlergias");
+    navigate("/buscarAlergias");
   };
 
   const handleEmergencia = () => {
-    navigate("/BlancAlergic-APP/emergencias");
+    navigate("/emergencias");
   };
 
   const handleTablaAlergias = () => {
-    navigate("/BlancAlergic-APP/tablaAlergias");
+    navigate("/tablaAlergias");
   };
 
   const handlelight_mode = () => {
@@ -67,7 +67,7 @@ function Layout({ children }: LayoutProps) {
       <main className="responsive padding-top">
         <div className="responsive">
           {children}
-          {location.pathname === "/BlancAlergic-APP/" && (
+          {location.pathname === "/" && (
             <>
               <CardVideo
                 imgPath={card1Image}

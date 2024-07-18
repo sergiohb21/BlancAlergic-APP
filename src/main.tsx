@@ -10,10 +10,10 @@ import Layout from "./Layaout.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Router>
+    <Router basename="/BlancAlergic-APP/">
       <Layout>
         <Routes>
-          <Route path="/BlancAlergic-APP/" element={<Outlet />}/>
+          <Route path="/" element={<Outlet />}/>
           <Route path="/buscarAlergias" element={<InputSearch />} />
           <Route path="/emergencias" element={<EmergencyView />} />
           <Route path="/tablaAlergias" element={<TableView />} />
