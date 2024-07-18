@@ -1,6 +1,8 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import CardVideo from "./components/CardImg";
+import card1Image from "../dist/Image/card-1.jpeg";
+import card2Image from "../dist/Image/card-2.jpeg";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,15 +18,15 @@ function Layout({ children }: LayoutProps) {
   };
 
   const handleConsultaAlergias = () => {
-    navigate("/buscarAlergias");
+    navigate("/BlancAlergic-APP/buscarAlergias");
   };
 
   const handleEmergencia = () => {
-    navigate("/emergencias");
+    navigate("/BlancAlergic-APP/emergencias");
   };
 
   const handleTablaAlergias = () => {
-    navigate("/tablaAlergias");
+    navigate("/BlancAlergic-APP/tablaAlergias");
   };
 
   const handlelight_mode = () => {
@@ -32,12 +34,18 @@ function Layout({ children }: LayoutProps) {
       document.body.className === "dark" ? "white" : "dark";
     setTheme(theme === "dark" ? "white" : "dark");
   };
-  
 
   const handleShareWhatsApp = () => {
-    window.open(
-      `whatsapp://send?text=${encodeURIComponent("https://sergiohb21.github.io/BlancAlergic-APP/")}`
-    );
+    const message = `🚨 ¡Alerta de Alergias! 🚨
+    
+  ¡Hey! ¿Sabías que Blanca tiene una app exclusiva para manejar sus alergias? 🌟
+  Si alguna vez te has preguntado si esa comida que vas a preparar le hará ver las estrellas 🌟 o visitar el hospital 🚑, ¡esta app es la solución!
+  
+  🔗 Échale un vistazo aquí: https://sergiohb21.github.io/BlancAlergic-APP/
+  
+  ¡Comparte y mantén a Blanca libre de sorpresas indeseadas! 🎉`;
+
+    window.open(`whatsapp://send?text=${encodeURIComponent(message)}`);
   };
 
   return (
@@ -47,7 +55,7 @@ function Layout({ children }: LayoutProps) {
           theme === "white" ? "dark" : "purple"
         }  white-text`}
       >
-        <nav className="flex space-between align-center padding">
+        <nav className="fixed top flex space-between align-center padding">
           <h6 className="max">BlancALergias</h6>
           <button className="transparent circle" onClick={handlelight_mode}>
             <i className="right">
@@ -62,23 +70,23 @@ function Layout({ children }: LayoutProps) {
           {location.pathname === "/BlancAlergic-APP/" && (
             <>
               <CardVideo
-                imgPath="./Image/card-1.jpeg"
+                imgPath={card1Image}
                 titleText="Tabla de Alergias"
-                infoText="Descubre una tabla con todas las alergias de Blanca."
+                infoText="¿Estás preparando un plato para Blanca y tienes dudas sobre sus alergias? Conoce todas sus alergias con un solo clic y evita cualquier sorpresa indeseada."
                 buttonAction={handleTablaAlergias}
                 buttonText="Ver Tabla"
               />
               <CardVideo
-                imgPath="./Image/card-2.jpeg"
+                imgPath={card2Image}
                 titleText="Emergencia"
-                infoText="¡Blanca, no te preocupes! Si has comido algo que te hace ver estrellas, sigue este protocolo y estarás lista para la próxima aventura."
+                infoText="¡Blanca, respira hondo! Si esa comida te ha puesto mal cuerpo, sigue este protocolo y estarás lista para tu próxima aventura culinaria."
                 buttonAction={handleEmergencia}
                 buttonText="Protocolo de Emergencia"
               />
               <CardVideo
-                imgPath="./Image/card-1.jpeg"
+                imgPath={card1Image}
                 titleText="Consultar Alergias"
-                infoText="Blanca, ¿sientes que un polvito mágico te hace estornudar sin parar? Averigua si es una alergia o simplemente la magia de la vida diaria."
+                infoText="¿Estas en un restaurante y te has comido algo que te hace ver estrellas? Averigua si es una alergia o simplemente la magia de la vida diaria."
                 buttonAction={handleConsultaAlergias}
                 buttonText="Buscar Alergias"
               />
