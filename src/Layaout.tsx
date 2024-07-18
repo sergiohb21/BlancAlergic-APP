@@ -1,5 +1,5 @@
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
 import CardVideo from "./components/CardImg";
 import card1Image from "/Image/card-1.jpeg";
 import card2Image from "/Image/card-2.jpeg";
@@ -13,6 +13,35 @@ function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [theme, setTheme] = useState<"dark" | "white">("dark");
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstallable, setIsInstallable] = useState(false);
+
+  useEffect(() => {
+    window.addEventListener("beforeinstallprompt", (e) => {
+      console.log("beforeinstallprompt Event triggered");
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsInstallable(true);
+    });
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", () => {});
+    };
+  }, []);
+
+  const handleInstallClick = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === "accepted") {
+          console.log("User accepted the A2HS prompt");
+        } else {
+          console.log("User dismissed the A2HS prompt");
+        }
+        setDeferredPrompt(null);
+      });
+    }
+  };
 
   const handleInicio = () => {
     navigate("/");
@@ -57,12 +86,24 @@ function Layout({ children }: LayoutProps) {
         }  white-text`}
       >
         <nav className="fixed top flex space-between align-center padding">
-          <h6 className="max">BlancALergias</h6>
-          <button className="transparent circle" onClick={handlelight_mode}>
-            <i className="right">
-              {theme === "dark" ? "light_mode" : "dark_mode"}
-            </i>
-          </button>
+          <h6 className="max margin">
+            BlancALergias
+          </h6>
+          <div className="flex align-center">
+            <button className="transparent circle" onClick={handlelight_mode}>
+              <i className="right">
+                {theme === "dark" ? "light_mode" : "dark_mode"}
+              </i>
+            </button>
+            {isInstallable && (
+              <button
+                className="transparent circle"
+                onClick={handleInstallClick}
+              >
+                <i className="right">download</i>
+              </button>
+            )}
+          </div>
         </nav>
       </header>
       <main className="responsive padding-top">
