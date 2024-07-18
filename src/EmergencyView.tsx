@@ -1,7 +1,7 @@
 import { useState } from "react";
 import CardVideo from "./components/CardImg";
-import call112Image from "../dist/Image/call-112.jpg";
-import identifySymptomsImage from "../dist/Image/identify-symptoms.png";
+import call112Image from "/Image/call-112.jpg";
+import identifySymptomsImage from "/Image/identify-symptoms.png";
 import epiPenImage from "/Image/epi-pen.jpg";
 import waitHelpImage from "/Image/wait-help.jpg";
 
