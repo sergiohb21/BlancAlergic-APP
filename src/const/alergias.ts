@@ -260,10 +260,17 @@ export const arrayAlergias: AlergiaType[] = [
     KUA_Litro: 3.69,
   },
   {
-    name: "Gato ",
+    name: "Gato",
     isAlergic: true,
     intensity: "Alta",
     category: "Animales",
     KUA_Litro: 16.9,
+  },
+  {
+    name: "Sandia",
+    isAlergic: true,
+    intensity: "Alta",
+    category: "Vegetales",
+    KUA_Litro: 5.00,
   },
 ];

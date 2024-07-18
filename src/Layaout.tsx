@@ -13,6 +13,7 @@ function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [theme, setTheme] = useState<"dark" | "white">("dark");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
 
@@ -32,6 +33,7 @@ function Layout({ children }: LayoutProps) {
   const handleInstallClick = () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       deferredPrompt.userChoice.then((choiceResult: any) => {
         if (choiceResult.outcome === "accepted") {
           console.log("User accepted the A2HS prompt");
