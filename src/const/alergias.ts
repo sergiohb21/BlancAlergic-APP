@@ -1,8 +1,11 @@
+export type AllergyIntensity = 'Baja' | 'Media' | 'Alta';
+export type AllergyCategory = 'Crustaceos' | 'Mariscos' | 'Pescados' | 'Frutas' | 'Vegetales' | 'Frutos secos' | 'Árboles' | 'Hongos' | 'Animales';
+
 export interface AlergiaType {
   name: string;
   isAlergic: boolean;
-  intensity: string;
-  category: string;
+  intensity: AllergyIntensity;
+  category: AllergyCategory;
   KUA_Litro?: number;
 }
 export const arrayAlergias: AlergiaType[] = [
@@ -151,7 +154,7 @@ export const arrayAlergias: AlergiaType[] = [
     name: "Calabacin",
     isAlergic: true,
     intensity: "Alta",
-    category: "vegetales",
+    category: "Vegetales",
     KUA_Litro: 7.00,
   },
   {

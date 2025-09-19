@@ -1,0 +1,1 @@
+You have to interpretate the $ARGUMENTS and execute the plan file in `.claude/sessions/` according to the $ARGUMENTS

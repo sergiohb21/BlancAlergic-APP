@@ -1,9 +1,15 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import CardVideo from "./components/CardImg";
-import card1Image from "/Image/card-1.jpeg";
-import card2Image from "/Image/card-2.jpeg";
-import card3Image from "/Image/card-3.jpeg";
+import React from 'react';
+import { useLocation } from 'react-router-dom';
+import { Header } from './components/layout/Header';
+import { Footer } from './components/layout/Footer';
+import { MobileNavigation } from './components/layout/MobileNavigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { Table, Search, AlertTriangle } from 'lucide-react';
+import card1Image from '/Image/card-1.jpeg';
+import card2Image from '/Image/card-2.jpeg';
+import card3Image from '/Image/card-3.jpeg';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -12,161 +18,111 @@ interface LayoutProps {
 function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [theme, setTheme] = useState<"dark" | "white">("dark");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [isInstallable, setIsInstallable] = useState(false);
 
-  useEffect(() => {
-    window.addEventListener("beforeinstallprompt", (e) => {
-      console.log("beforeinstallprompt Event triggered");
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setIsInstallable(true);
-    });
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", () => {});
-    };
-  }, []);
-
-  const handleInstallClick = () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      deferredPrompt.userChoice.then((choiceResult: any) => {
-        if (choiceResult.outcome === "accepted") {
-          console.log("User accepted the A2HS prompt");
-        } else {
-          console.log("User dismissed the A2HS prompt");
-        }
-        setDeferredPrompt(null);
-      });
+  const featureCards = [
+    {
+      image: card3Image,
+      title: "Tabla de Alergias",
+      description: "¿Estás preparando un plato para Blanca y tienes dudas sobre sus alergias? Conoce todas sus alergias con un solo clic y evita cualquier sorpresa indeseada.",
+      action: () => navigate("/tablaAlergias"),
+      buttonText: "Ver Tabla",
+      icon: Table
+    },
+    {
+      image: card2Image,
+      title: "Emergencia",
+      description: "¡Blanca, respira hondo! Si esa comida te ha puesto mal cuerpo, sigue este protocolo y estarás lista para tu próxima aventura culinaria.",
+      action: () => navigate("/emergencias"),
+      buttonText: "Protocolo de Emergencia",
+      icon: AlertTriangle
+    },
+    {
+      image: card1Image,
+      title: "Consultar Alergias",
+      description: "¿Estas en un restaurante y te has comido algo que te hace ver estrellas? Averigua si es una alergia o simplemente la magia de la vida diaria.",
+      action: () => navigate("/buscarAlergias"),
+      buttonText: "Buscar Alergias",
+      icon: Search
     }
-  };
-
-  const handleInicio = () => {
-    navigate("/");
-  };
-
-  const handleConsultaAlergias = () => {
-    navigate("/buscarAlergias");
-  };
-
-  const handleEmergencia = () => {
-    navigate("/emergencias");
-  };
-
-  const handleTablaAlergias = () => {
-    navigate("/tablaAlergias");
-  };
-
-  const handlelight_mode = () => {
-    document.body.className =
-      document.body.className === "dark" ? "white" : "dark";
-    setTheme(theme === "dark" ? "white" : "dark");
-  };
-
-  const handleShareWhatsApp = () => {
-    const message = `🚨 ¡Alerta de Alergias! 🚨
-    
-  ¡Hey! ¿Sabías que Blanca tiene una app exclusiva para manejar sus alergias? 🌟
-  Si alguna vez te has preguntado si esa comida que vas a preparar le hará ver las estrellas 🌟 o visitar el hospital 🚑, ¡esta app es la solución!
-  
-  🔗 Échale un vistazo aquí: https://sergiohb21.github.io/BlancAlergic-APP/
-  
-  ¡Comparte y mantén a Blanca libre de sorpresas indeseadas! 🎉`;
-
-    window.open(`whatsapp://send?text=${encodeURIComponent(message)}`);
-  };
+  ];
 
   return (
-    <>
-      <header
-        className={`fixed top responsive ${
-          theme === "white" ? "dark" : "purple"
-        }  white-text`}
-      >
-        <nav className="fixed top flex space-between align-center padding">
-          <h6 className="max margin">
-            BlancALergias
-          </h6>
-          <div className="flex align-center">
-            <button className="transparent circle" onClick={handlelight_mode}>
-              <i className="right">
-                {theme === "dark" ? "light_mode" : "dark_mode"}
-              </i>
-            </button>
-            {isInstallable && (
-              <button
-                className="transparent circle"
-                onClick={handleInstallClick}
-              >
-                <i className="right">download</i>
-              </button>
-            )}
-          </div>
-        </nav>
-      </header>
-      <main className="responsive padding-top">
-        <div className="responsive">
+    <div className="min-h-screen bg-background">
+      <Header />
+      
+      <main className="container mx-auto px-4 py-8 pb-20 md:pb-8">
+        <div className="max-w-6xl mx-auto">
           {children}
+          
           {location.pathname === "/" && (
-            <>
-              <CardVideo
-                imgPath={card3Image}
-                titleText="Tabla de Alergias"
-                infoText="¿Estás preparando un plato para Blanca y tienes dudas sobre sus alergias? Conoce todas sus alergias con un solo clic y evita cualquier sorpresa indeseada."
-                buttonAction={handleTablaAlergias}
-                buttonText="Ver Tabla"
-              />
-              <CardVideo
-                imgPath={card2Image}
-                titleText="Emergencia"
-                infoText="¡Blanca, respira hondo! Si esa comida te ha puesto mal cuerpo, sigue este protocolo y estarás lista para tu próxima aventura culinaria."
-                buttonAction={handleEmergencia}
-                buttonText="Protocolo de Emergencia"
-              />
-              <CardVideo
-                imgPath={card1Image}
-                titleText="Consultar Alergias"
-                infoText="¿Estas en un restaurante y te has comido algo que te hace ver estrellas? Averigua si es una alergia o simplemente la magia de la vida diaria."
-                buttonAction={handleConsultaAlergias}
-                buttonText="Buscar Alergias"
-              />
-            </>
+            <div className="space-y-8">
+              {/* Hero Section */}
+              <div className="text-center space-y-4">
+                <h1 className="text-4xl font-bold tracking-tight lg:text-5xl">
+                  BlancAlergic App
+                </h1>
+                <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                  Tu aplicación personalizada para el manejo de alergias. Consulta, 
+                  busca y mantente informado sobre las alergias de Blanca en cualquier momento.
+                </p>
+              </div>
+
+              {/* Feature Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {featureCards.map((card, index) => (
+                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <div className="aspect-video bg-gray-100">
+                      <img 
+                        src={card.image} 
+                        alt={card.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <CardHeader>
+                      <div className="flex items-center space-x-2">
+                        <card.icon className="h-5 w-5 text-primary" />
+                        <CardTitle className="text-lg">{card.title}</CardTitle>
+                      </div>
+                      <CardDescription className="text-sm">
+                        {card.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        onClick={card.action}
+                        className="w-full"
+                        size="lg"
+                      >
+                        {card.buttonText}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Quick Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card className="text-center p-6">
+                  <div className="text-3xl font-bold text-primary">29+</div>
+                  <div className="text-sm text-muted-foreground">Alergias Registradas</div>
+                </Card>
+                <Card className="text-center p-6">
+                  <div className="text-3xl font-bold text-primary">9</div>
+                  <div className="text-sm text-muted-foreground">Categorías</div>
+                </Card>
+                <Card className="text-center p-6">
+                  <div className="text-3xl font-bold text-primary">24/7</div>
+                  <div className="text-sm text-muted-foreground">Disponibilidad</div>
+                </Card>
+              </div>
+            </div>
           )}
         </div>
       </main>
-      <nav
-        className={`fixed bottom flex justify-around padding ${
-          theme === "white" ? "dark" : "purple"
-        }  white-text`}
-      >
-        <a onClick={handleInicio} className="flex flex-column align-center">
-          <i className="large">home</i>
-          <div>Inicio</div>
-        </a>
-        <a
-          onClick={handleConsultaAlergias}
-          className="flex flex-column align-center"
-        >
-          <i className="large">search</i>
-          <div>Alergias</div>
-        </a>
-        <a
-          className="flex flex-column align-center"
-          onClick={handleShareWhatsApp}
-        >
-          <i className="large">share</i>
-          <div>Compartir</div>
-        </a>
-      </nav>
-      <footer className="footer bottom-align large-padding text-center">
-        &copy; {new Date().getFullYear()} BlancALergias | Todos los derechos
-        reservados
-      </footer>
-    </>
+
+      <Footer />
+      <MobileNavigation />
+    </div>
   );
 }
 
