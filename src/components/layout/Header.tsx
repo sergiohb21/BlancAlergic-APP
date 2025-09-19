@@ -75,7 +75,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-4">
         <div className="flex items-center space-x-4">
-          <h1 className="text-xl font-bold">BlancALergias</h1>
+          <h1 className="text-xl font-bold text-foreground">BlancALergias</h1>
         </div>
 
         {/* Desktop Navigation */}
@@ -84,8 +84,10 @@ export function Header() {
             <button
               key={item.name}
               onClick={() => navigate(item.href)}
-              className={`flex items-center space-x-2 text-sm font-medium transition-colors hover:text-primary ${
-                isActive(item.href) ? 'text-primary' : 'text-muted-foreground'
+              className={`flex items-center space-x-2 text-sm font-medium transition-colors hover:text-primary rounded-md px-3 py-2 ${
+                isActive(item.href) 
+                  ? 'text-primary bg-primary/10 dark:bg-primary/20 border border-primary/30 dark:border-primary/40' 
+                  : 'text-muted-foreground hover:text-primary hover:bg-muted/30 dark:hover:bg-muted/20'
               }`}
             >
               <item.icon className="h-4 w-4" />
@@ -129,7 +131,7 @@ export function Header() {
           <SheetContent side="right" className="w-[300px] sm:w-[400px]">
             <div className="flex flex-col space-y-4 mt-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Menú</h2>
+                <h2 className="text-lg font-semibold text-foreground">Menú</h2>
                 <ModeToggle />
               </div>
               
@@ -139,7 +141,11 @@ export function Header() {
                     key={item.name}
                     variant={isActive(item.href) ? 'default' : 'ghost'}
                     onClick={() => navigate(item.href)}
-                    className="justify-start"
+                    className={`justify-start ${
+                      isActive(item.href) 
+                        ? 'bg-primary dark:bg-primary/80 text-primary-foreground shadow-md dark:shadow-lg' 
+                        : 'hover:bg-muted/30 dark:hover:bg-muted/20'
+                    }`}
                   >
                     <item.icon className="mr-2 h-4 w-4" />
                     {item.name}

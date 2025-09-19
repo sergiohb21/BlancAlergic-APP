@@ -43,13 +43,13 @@ function TableView(): JSX.Element {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Tabla de Alergias</h1>
+        <h1 className="text-3xl font-bold mb-2 text-foreground">Tabla de Alergias</h1>
         <p className="text-muted-foreground">
           Vista completa de las alergias detectadas con su información detallada
         </p>
       </div>
       
-      <div className="rounded-md border">
+      <div className="rounded-md border dark:border-border/60 shadow-sm dark:shadow-md">
         <Table>
           <TableHeader>
             <TableRow>
@@ -57,7 +57,7 @@ function TableView(): JSX.Element {
                 <Button 
                   variant="ghost" 
                   onClick={() => handleSort('name')}
-                  className="h-auto p-0 font-semibold hover:bg-transparent"
+                  className="h-auto p-0 font-semibold hover:bg-transparent text-foreground dark:text-foreground/90"
                 >
                   <div className="flex items-center space-x-1">
                     <span>Nombre</span>
@@ -69,7 +69,7 @@ function TableView(): JSX.Element {
                 <Button 
                   variant="ghost" 
                   onClick={() => handleSort('intensity')}
-                  className="h-auto p-0 font-semibold hover:bg-transparent"
+                  className="h-auto p-0 font-semibold hover:bg-transparent text-foreground dark:text-foreground/90"
                 >
                   <div className="flex items-center space-x-1">
                     <span>Intensidad</span>
@@ -81,7 +81,7 @@ function TableView(): JSX.Element {
                 <Button 
                   variant="ghost" 
                   onClick={() => handleSort('category')}
-                  className="h-auto p-0 font-semibold hover:bg-transparent"
+                  className="h-auto p-0 font-semibold hover:bg-transparent text-foreground dark:text-foreground/90"
                 >
                   <div className="flex items-center space-x-1">
                     <span>Categoría</span>
@@ -93,7 +93,7 @@ function TableView(): JSX.Element {
                 <Button 
                   variant="ghost" 
                   onClick={() => handleSort('KUA_Litro')}
-                  className="h-auto p-0 font-semibold hover:bg-transparent"
+                  className="h-auto p-0 font-semibold hover:bg-transparent text-foreground dark:text-foreground/90"
                 >
                   <div className="flex items-center space-x-1">
                     <span>KUA/L</span>
@@ -106,7 +106,7 @@ function TableView(): JSX.Element {
           <TableBody>
             {displayAllergies.map((alergia, index) => (
               <TableRow key={index}>
-                <TableCell className="font-medium">{alergia.name}</TableCell>
+                <TableCell className="font-medium text-foreground">{alergia.name}</TableCell>
                 <TableCell>
                   <Badge variant={getIntensityVariant(alergia.intensity)}>
                     {alergia.intensity}

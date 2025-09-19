@@ -129,7 +129,7 @@ function EmergencyView(): JSX.Element {
                   <div className="flex items-start space-x-3">
                     <Info className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                     <div className="text-foreground">
-                      <p className="font-medium mb-1">Información adicional:</p>
+                      <p className="font-medium mb-1 text-foreground">Información adicional:</p>
                       <p className="text-sm leading-relaxed">{step.moreInfo}</p>
                     </div>
                   </div>

@@ -58,7 +58,7 @@ function Layout({ children }: LayoutProps) {
             <div className="space-y-8">
               {/* Hero Section */}
               <div className="text-center space-y-4">
-                <h1 className="text-4xl font-bold tracking-tight lg:text-5xl">
+                <h1 className="text-4xl font-bold tracking-tight lg:text-5xl text-foreground">
                   BlancAlergic App
                 </h1>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto">

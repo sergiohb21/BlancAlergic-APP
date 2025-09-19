@@ -54,8 +54,10 @@ export function MobileNavigation() {
               variant="ghost"
               size="sm"
               onClick={() => handleNavigation(item)}
-              className={`flex flex-col items-center space-y-1 h-auto py-2 px-3 ${
-                isActive(item.href) ? 'text-primary' : 'text-muted-foreground'
+              className={`flex flex-col items-center space-y-1 h-auto py-2 px-3 rounded-lg transition-colors ${
+                isActive(item.href) 
+                  ? 'text-primary bg-primary/10 dark:bg-primary/20 border border-primary/30 dark:border-primary/40 shadow-sm' 
+                  : 'text-muted-foreground hover:text-primary hover:bg-muted/30 dark:hover:bg-muted/20'
               }`}
             >
               <item.icon className="h-5 w-5" />

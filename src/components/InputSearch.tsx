@@ -106,7 +106,7 @@ export default function InputSearch() {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Search Header */}
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold">Buscar Alergias</h1>
+        <h1 className="text-3xl font-bold text-foreground">Buscar Alergias</h1>
         <p className="text-muted-foreground">
           Consulta si un alimento es alergénico para Blanca
         </p>
@@ -148,7 +148,7 @@ export default function InputSearch() {
           {filteredResults.length > 0 ? (
             <>
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">
+                <h2 className="text-xl font-semibold text-foreground">
                   Resultados ({filteredResults.length})
                 </h2>
                 <Badge variant="outline">
@@ -185,7 +185,7 @@ export default function InputSearch() {
       {/* Quick Categories */}
       {!showResults && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Buscar por categoría:</h3>
+          <h3 className="text-lg font-semibold text-foreground">Buscar por categoría:</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
             {[
               'Crustaceos', 'Mariscos', 'Pescados', 'Frutas', 
