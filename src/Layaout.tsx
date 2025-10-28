@@ -23,7 +23,7 @@ function Layout({ children }: LayoutProps) {
     {
       image: card3Image,
       title: "Tabla de Alergias",
-      description: "¿Estás preparando un plato para Blanca y tienes dudas sobre sus alergias? Conoce todas sus alergias con un solo clic y evita cualquier sorpresa indeseada.",
+      description: "Conoce todas sus alergias con un solo clic y evita cualquier sorpresa indeseada.",
       action: () => navigate("/tablaAlergias"),
       buttonText: "Ver Tabla",
       icon: Table
@@ -56,17 +56,6 @@ function Layout({ children }: LayoutProps) {
           
           {location.pathname === "/" && (
             <div className="space-y-8">
-              {/* Hero Section */}
-              <div className="text-center space-y-4">
-                <h1 className="text-4xl font-bold tracking-tight lg:text-5xl text-foreground">
-                  BlancAlergic App
-                </h1>
-                <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                  Tu aplicación personalizada para el manejo de alergias. Consulta, 
-                  busca y mantente informado sobre las alergias de Blanca en cualquier momento.
-                </p>
-              </div>
-
               {/* Feature Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {featureCards.map((card, index) => (
@@ -109,10 +98,6 @@ function Layout({ children }: LayoutProps) {
                 <Card className="text-center p-6">
                   <div className="text-3xl font-bold text-primary">9</div>
                   <div className="text-sm text-muted-foreground">Categorías</div>
-                </Card>
-                <Card className="text-center p-6">
-                  <div className="text-3xl font-bold text-primary">24/7</div>
-                  <div className="text-sm text-muted-foreground">Disponibilidad</div>
                 </Card>
               </div>
             </div>

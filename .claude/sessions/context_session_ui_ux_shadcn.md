@@ -20,7 +20,7 @@
 ## Data Structure
 - Allergy database with 29+ allergens
 - TypeScript interface: AlergiaType with name, isAlergic, intensity, category, KUA_Litro
-- Categories: Crustaceos, Mariscos, Pescados, Frutas, Vegetales, Frutos secos, Árboles, Hongos, Animales
+- Categories: Crustáceos, Mariscos, Pescados, Frutas, Vegetales, Frutos secos, Árboles, Hongos, Animales
 
 ## Current Features
 1. Allergy search and filtering

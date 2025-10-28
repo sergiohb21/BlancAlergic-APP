@@ -1,7 +1,7 @@
 # Contexto: Corrección del filtrado por categorías de alergias
 
 ## Problema identificado
-El usuario reporta que al pulsar en las categorías sugeridas (como "Crustaceos", "Frutas", etc.), no se muestran correctamente las alergias de Blanca. Por ejemplo:
+El usuario reporta que al pulsar en las categorías sugeridas (como "Crustáceos", "Frutas", etc.), no se muestran correctamente las alergias de Blanca. Por ejemplo:
 - Blanca es alérgica a crustáceos (Gamba) pero no debería mostrar que puede comerlos
 - Blanca no es alérgica a "frutas" en general pero sí a fresas específicamente
 

@@ -6,7 +6,7 @@ import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { AlergiaType } from "./const/alergias";
 
 function TableView(): JSX.Element {
-  const { allergies, filteredAllergies, sortBy, sortOrder, setSortBy, setSortOrder } = useAllergies();
+  const { allergies, filteredAllergies, sortBy, sortOrder, setSortBy, setSortOrder, filterAllergies } = useAllergies();
   
   const displayAllergies = filteredAllergies.length > 0 ? filteredAllergies : allergies;
 
@@ -17,6 +17,7 @@ function TableView(): JSX.Element {
       setSortBy(field);
       setSortOrder('asc');
     }
+    filterAllergies();
   };
 
   const getSortIcon = (field: keyof AlergiaType) => {

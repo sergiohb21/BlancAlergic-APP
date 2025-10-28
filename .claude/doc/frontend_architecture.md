@@ -199,7 +199,7 @@ export interface AlergiaType {
 
 export type IntensityLevel = 'Baja' | 'Media' | 'Alta';
 export type AllergyCategory = 
-  | 'Crustaceos'
+  | 'Crustáceos'
   | 'Mariscos'
   | 'Pescados'
   | 'Vegetales'

@@ -148,7 +148,7 @@ function EmergencyView(): JSX.Element {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-destructive-foreground text-sm leading-relaxed">
+          <p className="text-foreground text-sm leading-relaxed font-medium">
             Este protocolo es una guía de emergencia. Siempre busque atención médica profesional 
             en caso de una reacción alérgica grave. No sustituye el consejo médico profesional.
           </p>

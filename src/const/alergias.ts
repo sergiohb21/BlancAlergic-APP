@@ -43,7 +43,7 @@ export const arrayAlergias: AlergiaType[] = [
     KUA_Litro: 20.0,
   },
   {
-    name: "Crustáceos en general",
+    name: "Crustáceos general",
     isAlergic: true,
     intensity: "Alta",
     category: "Crustáceos",

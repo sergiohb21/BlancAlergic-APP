@@ -48,7 +48,7 @@ npm run deploy     # Deploy to GitHub Pages using gh-pages
 #### Data Management
 - **Allergy Database** (`src/const/alergias.ts`) - Comprehensive allergy data with TypeScript interfaces
   - Contains 29+ allergens with medical data including KUA/Litro measurements
-  - Categories: Crustaceos, Mariscos, Pescados, Frutas, Vegetales, Frutos secos, Árboles, Hongos, Animales
+  - Categories: Crustáceos, Mariscos, Pescados, Frutas, Vegetales, Frutos secos, Árboles, Hongos, Animales
 
 ### Key Technical Details
 

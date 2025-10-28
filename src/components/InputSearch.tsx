@@ -224,7 +224,7 @@ export default function InputSearch() {
             aria-label="Categorías de alergias"
           >
             {[
-              'Crustaceos', 'Mariscos', 'Pescados', 'Frutas',
+              'Crustáceos', 'Mariscos', 'Pescados', 'Frutas',
               'Vegetales', 'Frutos secos', 'Árboles', 'Hongos', 'Animales'
             ].map((category) => (
               <Button
