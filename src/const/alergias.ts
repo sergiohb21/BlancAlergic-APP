@@ -1,5 +1,17 @@
-export type AllergyIntensity = 'Baja' | 'Media' | 'Alta';
-export type AllergyCategory = 'Crustaceos' | 'Mariscos' | 'Pescados' | 'Frutas' | 'Vegetales' | 'Frutos secos' | 'Árboles' | 'Hongos' | 'Animales';
+export type AllergyIntensity = "Baja" | "Media" | "Alta";
+export type AllergyCategory =
+  | "Crustáceos"
+  | "Mariscos"
+  | "Pescados"
+  | "Frutas"
+  | "Vegetales"
+  | "Frutos secos"
+  | "Árboles"
+  | "Hongos"
+  | "Animales"
+  | "Especias"
+  | "Semillas"
+  | "Proteinas";
 
 export interface AlergiaType {
   name: string;
@@ -10,10 +22,38 @@ export interface AlergiaType {
 }
 export const arrayAlergias: AlergiaType[] = [
   {
+    name: "Frutos secos",
+    isAlergic: true,
+    intensity: "Alta",
+    category: "Frutos secos",
+    KUA_Litro: 20.0,
+  },
+  {
+    name: "Proteina LTP",
+    isAlergic: true,
+    intensity: "Alta",
+    category: "Proteinas",
+    KUA_Litro: 20.0,
+  },
+  {
+    name: "Mariscos",
+    isAlergic: true,
+    intensity: "Alta",
+    category: "Mariscos",
+    KUA_Litro: 20.0,
+  },
+  {
+    name: "Crustáceos en general",
+    isAlergic: true,
+    intensity: "Alta",
+    category: "Crustáceos",
+    KUA_Litro: 20.0,
+  },
+  {
     name: "Gamba",
     isAlergic: true,
     intensity: "Alta",
-    category: "Crustaceos",
+    category: "Crustáceos",
     KUA_Litro: 1.36,
   },
   {
@@ -87,10 +127,24 @@ export const arrayAlergias: AlergiaType[] = [
     KUA_Litro: 13.2,
   },
   {
+    name: "Melocotón LTP",
+    isAlergic: true,
+    intensity: "Alta",
+    category: "Frutas",
+    KUA_Litro: 6.7,
+  },
+  {
     name: "Calabaza",
     isAlergic: true,
     intensity: "Alta",
     category: "Vegetales",
+    KUA_Litro: 2.94,
+  },
+  {
+    name: "Pipa Calabaza",
+    isAlergic: true,
+    intensity: "Alta",
+    category: "Frutos secos",
     KUA_Litro: 2.94,
   },
   {
@@ -108,11 +162,18 @@ export const arrayAlergias: AlergiaType[] = [
     KUA_Litro: 1.83,
   },
   {
+    name: "Avellana LTP",
+    isAlergic: true,
+    intensity: "Alta",
+    category: "Frutos secos",
+    KUA_Litro: 2.45,
+  },
+  {
     name: "Nuez",
     isAlergic: true,
     intensity: "Alta",
     category: "Frutos secos",
-    KUA_Litro: 7.2,
+    KUA_Litro: 3.55,
   },
 
   {
@@ -155,77 +216,84 @@ export const arrayAlergias: AlergiaType[] = [
     isAlergic: true,
     intensity: "Alta",
     category: "Vegetales",
-    KUA_Litro: 7.00,
+    KUA_Litro: 7.0,
   },
   {
-    name:"Pimiento rojo",
+    name: "Pimiento rojo",
     isAlergic: true,
     intensity: "Alta",
     category: "Vegetales",
-    KUA_Litro: 5.00,
+    KUA_Litro: 5.0,
   },
   {
-    name:"Fresa",
+    name: "Fresa",
     isAlergic: true,
     intensity: "Alta",
     category: "Frutas",
-    KUA_Litro: 5.00,
+    KUA_Litro: 5.0,
   },
   {
-    name:"Aguacate",
+    name: "Aguacate",
     isAlergic: true,
     intensity: "Alta",
     category: "Vegetales",
-    KUA_Litro: 5.00,
+    KUA_Litro: 5.0,
   },
   {
-    name:"Berenjena",
+    name: "Berenjena",
     isAlergic: true,
     intensity: "Alta",
     category: "Vegetales",
-    KUA_Litro: 5.00,
+    KUA_Litro: 5.0,
   },
   {
-    name:"Piña",
+    name: "Piña",
     isAlergic: true,
     intensity: "Alta",
     category: "Vegetales",
-    KUA_Litro: 5.00,
+    KUA_Litro: 5.0,
   },
   {
-    name:"Melón",
+    name: "Melón",
     isAlergic: true,
     intensity: "Alta",
     category: "Vegetales",
-    KUA_Litro: 5.00,
+    KUA_Litro: 5.0,
   },
   {
-    name:"Paraguaya",
+    name: "Paraguaya",
     isAlergic: true,
     intensity: "Alta",
     category: "Vegetales",
-    KUA_Litro: 14.00,
+    KUA_Litro: 14.0,
   },
   {
-    name:"Pepino",
+    name: "Pepino",
     isAlergic: true,
     intensity: "Alta",
     category: "Vegetales",
-    KUA_Litro: 5.00,
+    KUA_Litro: 5.0,
   },
   {
-    name:"Pimiento verde",
+    name: "Pimiento verde",
     isAlergic: true,
     intensity: "Alta",
     category: "Vegetales",
-    KUA_Litro: 5.00,
+    KUA_Litro: 5.0,
   },
   {
-    name:"Calabaza",
+    name: "Berenjena",
+    isAlergic: false,
+    intensity: "Baja",
+    category: "Vegetales",
+    KUA_Litro: 0.12,
+  },
+  {
+    name: "Calabaza",
     isAlergic: true,
     intensity: "Alta",
     category: "Vegetales",
-    KUA_Litro: 4.00,
+    KUA_Litro: 4.0,
   },
   {
     name: "Hierba timonía",
@@ -249,11 +317,25 @@ export const arrayAlergias: AlergiaType[] = [
     KUA_Litro: 16.2,
   },
   {
+    name: "Nuez de nogal",
+    isAlergic: true,
+    intensity: "Alta",
+    category: "Árboles",
+    KUA_Litro: 7.2,
+  },
+  {
     name: "Alternaria alternata",
     isAlergic: true,
     intensity: "Alta",
     category: "Hongos",
     KUA_Litro: 10.2,
+  },
+  {
+    name: "Trufa",
+    isAlergic: true,
+    intensity: "Alta",
+    category: "Hongos",
+    KUA_Litro: 0.0,
   },
   {
     name: "Perro",
@@ -274,6 +356,97 @@ export const arrayAlergias: AlergiaType[] = [
     isAlergic: true,
     intensity: "Alta",
     category: "Vegetales",
-    KUA_Litro: 5.00,
+    KUA_Litro: 5.0,
+  },
+  {
+    name: "Melon",
+    isAlergic: false,
+    intensity: "Baja",
+    category: "Frutas",
+    KUA_Litro: 0.12,
+  },
+  {
+    name: "Berenjena",
+    isAlergic: false,
+    intensity: "Baja",
+    category: "Vegetales",
+    KUA_Litro: 0.12,
+  },
+  {
+    name: "Sandia",
+    isAlergic: false,
+    intensity: "Baja",
+    category: "Frutas",
+    KUA_Litro: 0.04,
+  },
+  {
+    name: "Ciruela",
+    isAlergic: true,
+    intensity: "Alta",
+    category: "Frutas",
+    KUA_Litro: 5.55,
+  },
+  {
+    name: "Pepino",
+    isAlergic: true,
+    intensity: "Media",
+    category: "Vegetales",
+    KUA_Litro: 1.59,
+  },
+  {
+    name: "Pimienta verde",
+    isAlergic: false,
+    intensity: "Baja",
+    category: "Especias",
+    KUA_Litro: 0.0,
+  },
+  {
+    name: "Fresas",
+    isAlergic: true,
+    intensity: "Media",
+    category: "Frutas",
+    KUA_Litro: 1.95,
+  },
+  {
+    name: "Mango",
+    isAlergic: false,
+    intensity: "Baja",
+    category: "Frutas",
+    KUA_Litro: 0.03,
+  },
+  {
+    name: "Castaña",
+    isAlergic: false,
+    intensity: "Baja",
+    category: "Frutos secos",
+    KUA_Litro: 0.13,
+  },
+  {
+    name: "Piña",
+    isAlergic: false,
+    intensity: "Baja",
+    category: "Frutas",
+    KUA_Litro: 0.13,
+  },
+  {
+    name: "Uva",
+    isAlergic: false,
+    intensity: "Baja",
+    category: "Frutas",
+    KUA_Litro: 0.48,
+  },
+  {
+    name: "Kiwi",
+    isAlergic: false,
+    intensity: "Baja",
+    category: "Frutas",
+    KUA_Litro: 0.03,
+  },
+  {
+    name: "Semilla de girasol",
+    isAlergic: false,
+    intensity: "Baja",
+    category: "Semillas",
+    KUA_Litro: 0.12,
   },
 ];
