@@ -4,34 +4,11 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Search, CheckCircle, AlertTriangle, X } from 'lucide-react';
-import { AlergiaType, AllergyIntensity } from '@/const/alergias';
+import { Search, CheckCircle, X } from 'lucide-react';
+import { AlergiaType } from '@/const/alergias';
+import { getIntensityVariant, getIntensityIcon } from '@/utils/allergy-utils';
+import { MIN_SEARCH_LENGTH, DEBOUNCE_DELAY, ALLERGY_CATEGORIES } from '@/utils/constants';
 
-function getIntensityVariant(intensity: AllergyIntensity) {
-  switch (intensity) {
-    case 'Alta':
-      return 'destructive';
-    case 'Media':
-      return 'default';
-    case 'Baja':
-      return 'secondary';
-    default:
-      return 'outline';
-  }
-}
-
-function getIntensityIcon(intensity: AllergyIntensity) {
-  switch (intensity) {
-    case 'Alta':
-      return <AlertTriangle className="h-4 w-4 text-destructive" />;
-    case 'Media':
-      return <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />;
-    case 'Baja':
-      return <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />;
-    default:
-      return null;
-  }
-}
 
 function AllergyCard({ allergy, showCategoryInfo = false }: {
   allergy: AlergiaType;
@@ -86,8 +63,6 @@ export default function InputSearch() {
   const [searchMode, setSearchMode] = useState<'name' | 'category'>('name');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [localQuery, setLocalQuery] = useState('');
-  const [filteredResults, setFilteredResults] = useState<AlergiaType[]>([]);
-  const [showResults, setShowResults] = useState(false);
 
   // Optimized filtering logic
   const getFilteredResults = useCallback(() => {
@@ -96,7 +71,7 @@ export default function InputSearch() {
       return allergies.filter(allergy =>
         allergy.category.toLowerCase() === selectedCategory.toLowerCase()
       );
-    } else if (searchMode === 'name' && localQuery.length > 3) {
+    } else if (searchMode === 'name' && localQuery.length > MIN_SEARCH_LENGTH) {
       // MODO NOMBRE: Solo elementos alérgicos (comportamiento original)
       return allergies.filter(allergy =>
         allergy.isAlergic &&
@@ -106,35 +81,29 @@ export default function InputSearch() {
     return [];
   }, [allergies, searchMode, selectedCategory, localQuery]);
 
+  // Get current display results
+  const currentResults = getFilteredResults();
+  const shouldShowResults = (searchMode === 'category' && selectedCategory) ||
+                           (searchMode === 'name' && localQuery.length > MIN_SEARCH_LENGTH);
+
   // Optimized debouncing
   useEffect(() => {
     const timer = setTimeout(() => {
-      const results = getFilteredResults();
-
       if (searchMode === 'category' && selectedCategory) {
-        // Para categorías, siempre mostrar resultados aunque estén vacíos
-        setFilteredResults(results);
-        setShowResults(true);
+        // Para categorías, siempre establecer el query global
+        setSearchQuery(localQuery);
+        filterAllergies();
       } else if (searchMode === 'name') {
         // Para búsqueda por nombre, manejar según si hay resultados o no
-        if (localQuery.length > 3 && results.length > 0) {
+        if (localQuery.length > MIN_SEARCH_LENGTH) {
           setSearchQuery(localQuery);
           filterAllergies();
-          setFilteredResults(results);
-          setShowResults(true);
-        } else if (localQuery.length > 3 && results.length === 0) {
-          // Mostrar mensaje "no alérgico" cuando no hay resultados
-          setFilteredResults([]);
-          setShowResults(true);
-        } else {
-          setFilteredResults([]);
-          setShowResults(false);
         }
       }
-    }, 300);
+    }, DEBOUNCE_DELAY);
 
     return () => clearTimeout(timer);
-  }, [localQuery, searchMode, selectedCategory, getFilteredResults, setSearchQuery, filterAllergies]);
+  }, [localQuery, searchMode, selectedCategory, setSearchQuery, filterAllergies]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -148,27 +117,25 @@ export default function InputSearch() {
     setSelectedCategory(category.toLowerCase());
     setLocalQuery(category.toLowerCase());
 
-    // Para categorías, mostrar resultados inmediatamente sin esperar debouncing
-    const results = allergies.filter(allergy =>
-      allergy.category.toLowerCase() === category.toLowerCase()
-    );
-    setFilteredResults(results);
-    setShowResults(true);
-  }, [allergies]);
+    // Para categorías, establecer el query global inmediatamente
+    setSearchQuery(category.toLowerCase());
+    filterAllergies();
+  }, [setSearchQuery, filterAllergies]);
 
   const clearSearch = () => {
     setLocalQuery('');
-    setShowResults(false);
     setSearchMode('name');
     setSelectedCategory(null);
     setSearchQuery('');
+    filterAllergies();
   };
 
   const switchToNameSearch = () => {
     setSearchMode('name');
     setSelectedCategory(null);
     setLocalQuery('');
-    setShowResults(false);
+    setSearchQuery('');
+    filterAllergies();
   };
 
   return (
@@ -207,15 +174,15 @@ export default function InputSearch() {
           )}
         </div>
 
-        {searchMode === 'name' && localQuery.length > 0 && localQuery.length <= 3 && (
+        {searchMode === 'name' && localQuery.length > 0 && localQuery.length <= MIN_SEARCH_LENGTH && (
           <p className="text-sm text-muted-foreground mt-2">
-            Escribe al menos 4 caracteres para buscar...
+            Escribe al menos {MIN_SEARCH_LENGTH + 1} caracteres para buscar...
           </p>
         )}
       </div>
 
       {/* Quick Categories */}
-      {!showResults && (
+      {!shouldShowResults && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-foreground">Buscar por categoría:</h3>
           <div
@@ -223,10 +190,7 @@ export default function InputSearch() {
             role="tablist"
             aria-label="Categorías de alergias"
           >
-            {[
-              'Crustáceos', 'Mariscos', 'Pescados', 'Frutas',
-              'Vegetales', 'Frutos secos', 'Árboles', 'Hongos', 'Animales'
-            ].map((category) => (
+            {ALLERGY_CATEGORIES.map((category) => (
               <Button
                 key={category}
                 variant="outline"
@@ -245,7 +209,7 @@ export default function InputSearch() {
       )}
 
       {/* Search Mode Indicator */}
-      {showResults && (
+      {shouldShowResults && (
         <div className="flex items-center justify-between mb-4">
           <Badge variant={searchMode === 'category' ? 'default' : 'outline'}>
             {searchMode === 'category'
@@ -268,21 +232,21 @@ export default function InputSearch() {
       )}
 
       {/* Search Results */}
-      {showResults && (
+      {shouldShowResults && (
         <div className="space-y-4">
-          {filteredResults.length > 0 ? (
+          {currentResults.length > 0 ? (
             <>
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-foreground">
-                  {searchMode === 'category' ? 'Alimentos en esta categoría' : 'Resultados'} ({filteredResults.length})
+                  {searchMode === 'category' ? 'Alimentos en esta categoría' : 'Resultados'} ({currentResults.length})
                 </h2>
                 {searchMode === 'category' && (
                   <div className="flex gap-2">
                     <Badge variant="destructive">
-                      Alérgicos: {filteredResults.filter(a => a.isAlergic).length}
+                      Alérgicos: {currentResults.filter(a => a.isAlergic).length}
                     </Badge>
                     <Badge variant="secondary">
-                      Seguros: {filteredResults.filter(a => !a.isAlergic).length}
+                      Seguros: {currentResults.filter(a => !a.isAlergic).length}
                     </Badge>
                   </div>
                 )}
@@ -296,13 +260,13 @@ export default function InputSearch() {
               {searchMode === 'category' ? (
                 // Vista de categoría: mostrar alérgicos primero, luego seguros
                 <div className="space-y-6">
-                  {filteredResults.filter(a => a.isAlergic).length > 0 && (
+                  {currentResults.filter((a: AlergiaType) => a.isAlergic).length > 0 && (
                     <div>
                       <h3 className="text-lg font-medium text-red-600 dark:text-red-400 mb-3">
                         ⚠️ No puede comer
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {filteredResults
+                        {currentResults
                           .filter(a => a.isAlergic)
                           .map((allergy, index: number) => (
                             <AllergyCard key={`alergic-${index}`} allergy={allergy} showCategoryInfo={false} />
@@ -312,13 +276,13 @@ export default function InputSearch() {
                     </div>
                   )}
 
-                  {filteredResults.filter(a => !a.isAlergic).length > 0 && (
+                  {currentResults.filter((a: AlergiaType) => !a.isAlergic).length > 0 && (
                     <div>
                       <h3 className="text-lg font-medium text-green-600 dark:text-green-400 mb-3">
                         ✅ Sí puede comer
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {filteredResults
+                        {currentResults
                           .filter(a => !a.isAlergic)
                           .map((allergy, index: number) => (
                             <AllergyCard key={`safe-${index}`} allergy={allergy} showCategoryInfo={false} />
@@ -331,7 +295,7 @@ export default function InputSearch() {
               ) : (
                 // Vista normal de búsqueda por nombre
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredResults.map((allergy, index: number) => (
+                  {currentResults.map((allergy, index: number) => (
                     <AllergyCard key={index} allergy={allergy} />
                   ))}
                 </div>

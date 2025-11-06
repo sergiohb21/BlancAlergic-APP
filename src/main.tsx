@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom
 import InputSearch from "./components/InputSearch.tsx";
 import TableView from "./TableView.tsx";
 import EmergencyView from "./EmergencyView.tsx";
-import Layout from "./Layaout.tsx";
+import Layout from "./Layout.tsx";
 import "./index.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AppProvider } from "@/contexts/AppContext";

@@ -2,8 +2,9 @@ import { Card} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAllergies } from "./hooks/useAllergies";
-import { ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, CheckCircle, AlertCircle } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { AlergiaType } from "./const/alergias";
+import { getIntensityVariantDetailed, getIntensityIconDetailed, getIntensityColor } from "@/utils/allergy-utils";
 
 function TableView(): JSX.Element {
   const { allergies, filteredAllergies, sortBy, sortOrder, setSortBy, setSortOrder, filterAllergies } = useAllergies();
@@ -29,54 +30,7 @@ function TableView(): JSX.Element {
     return sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
   };
 
-  const getIntensityVariant = (intensity: string) => {
-    switch (intensity.toLowerCase()) {
-      case 'alta':
-      case 'alto':
-        return 'destructive';
-      case 'media':
-      case 'medio':
-        return 'default';
-      case 'baja':
-      case 'bajo':
-        return 'secondary';
-      default:
-        return 'outline';
-    }
-  };
-
-  const getIntensityIcon = (intensity: string) => {
-    switch (intensity.toLowerCase()) {
-      case 'alta':
-      case 'alto':
-        return <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />;
-      case 'media':
-      case 'medio':
-        return <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />;
-      case 'baja':
-      case 'bajo':
-        return <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />;
-      default:
-        return null;
-    }
-  };
-
-  const getIntensityColor = (intensity: string) => {
-    switch (intensity.toLowerCase()) {
-      case 'alta':
-      case 'alto':
-        return 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/20';
-      case 'media':
-      case 'medio':
-        return 'border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950/20';
-      case 'baja':
-      case 'bajo':
-        return 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20';
-      default:
-        return 'border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950/20';
-    }
-  };
-
+  
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
       {/* Header */}
@@ -140,12 +94,12 @@ function TableView(): JSX.Element {
                 <h3 className="text-lg font-semibold text-foreground mb-1">
                   {alergia.name}
                 </h3>
-                <Badge variant={getIntensityVariant(alergia.intensity)} className="text-xs">
+                <Badge variant={getIntensityVariantDetailed(alergia.intensity)} className="text-xs">
                   {alergia.intensity}
                 </Badge>
               </div>
               <div className="ml-2">
-                {getIntensityIcon(alergia.intensity)}
+                {getIntensityIconDetailed(alergia.intensity)}
               </div>
             </div>
 

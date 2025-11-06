@@ -131,7 +131,7 @@ export function Header() {
           </SheetTrigger>
           <SheetContent side="right" className="w-[300px] sm:w-[400px]">
             <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
-            <SheetDescription className="sr-only">
+            <SheetDescription className="sr-only" style={{ display: 'none' }}>
               Panel de navegación con acceso a todas las secciones de la aplicación de alergias
             </SheetDescription>
             <div className="flex flex-col space-y-4 mt-4">

@@ -61,10 +61,11 @@ function Layout({ children }: LayoutProps) {
                 {featureCards.map((card, index) => (
                   <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
                     <div className="aspect-video bg-gray-100">
-                      <img 
-                        src={card.image} 
+                      <img
+                        src={card.image}
                         alt={card.title}
                         className="w-full h-full object-cover"
+                        loading="lazy"
                       />
                     </div>
                     <CardHeader>

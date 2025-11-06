@@ -8,22 +8,24 @@ import epiPenImage from "/Image/epi-pen.jpg";
 import waitHelpImage from "/Image/wait-help.jpg";
 
 interface Step {
+  id: string;
   imgPath: string;
   titleText: string;
   infoText: string;
   moreInfo: string;
-  buttonAction: () => void;
+  buttonAction?: () => void;
   buttonText: string;
   icon: React.ReactNode;
 }
 
 function EmergencyView(): JSX.Element {
-  const [showMoreInfo, setShowMoreInfo] = useState<{ [key: number]: boolean }>(
+  const [showMoreInfo, setShowMoreInfo] = useState<{ [key: string]: boolean }>(
     {}
   );
 
   const steps: Step[] = [
     {
+      id: "llamar-112",
       imgPath: call112Image,
       titleText: "Llamar al 112",
       infoText:
@@ -35,44 +37,44 @@ function EmergencyView(): JSX.Element {
       icon: <Phone className="h-6 w-6" />,
     },
     {
+      id: "identificar-sintomas",
       imgPath: identifySymptomsImage,
       titleText: "Identificar Síntomas",
       infoText:
         "Revise si la persona tiene síntomas de una reacción alérgica grave, como dificultad para respirar, hinchazón de la cara o labios, o erupciones en la piel.",
       moreInfo:
         "Los síntomas pueden variar, pero incluyen hinchazón, urticaria, dificultad para respirar y anafilaxia.",
-      buttonAction: () => toggleMoreInfo(1),
       buttonText: "Más Información",
       icon: <Info className="h-6 w-6" />,
     },
     {
+      id: "usar-epipen",
       imgPath: epiPenImage,
       titleText: "Usar EpiPen",
       infoText:
         "Si la persona tiene un EpiPen, administre la inyección de adrenalina en el muslo exterior. Esto puede ayudar a reducir los síntomas mientras espera la llegada de la ayuda médica.",
       moreInfo:
         "Asegúrese de seguir las instrucciones del EpiPen y mantenga la calma.",
-      buttonAction: () => toggleMoreInfo(2),
       buttonText: "Más Información",
       icon: <AlertTriangle className="h-6 w-6" />,
     },
     {
+      id: "esperar-ayuda",
       imgPath: waitHelpImage,
       titleText: "Esperar la Ayuda",
       infoText:
         "Mantenga a la persona cómoda y en una posición que facilite la respiración mientras espera la llegada de los servicios de emergencia.",
       moreInfo:
         "Intente mantener a la persona tranquila y vigilada en todo momento.",
-      buttonAction: () => toggleMoreInfo(3),
       buttonText: "Más Información",
       icon: <Heart className="h-6 w-6" />,
     },
   ];
 
-  const toggleMoreInfo = (index: number) => {
+  const toggleMoreInfo = (stepId: string) => {
     setShowMoreInfo((prev) => ({
       ...prev,
-      [index]: !prev[index],
+      [stepId]: !prev[stepId],
     }));
   };
 
@@ -100,10 +102,11 @@ function EmergencyView(): JSX.Element {
               <CardContent className="space-y-4">
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="md:w-1/3">
-                    <img 
-                      src={step.imgPath} 
-                      alt={step.titleText} 
+                    <img
+                      src={step.imgPath}
+                      alt={step.titleText}
                       className="w-full h-48 object-cover rounded-lg"
+                      loading="lazy"
                     />
                   </div>
                   <div className="md:w-2/3 space-y-3">
@@ -111,7 +114,7 @@ function EmergencyView(): JSX.Element {
                       {step.infoText}
                     </CardDescription>
                     <Button 
-                      onClick={step.buttonAction}
+                      onClick={step.buttonAction || (() => toggleMoreInfo(step.id))}
                       className="w-full md:w-auto"
                       variant={step.buttonText === "Llamar" ? "destructive" : "default"}
                     >
@@ -123,7 +126,7 @@ function EmergencyView(): JSX.Element {
               </CardContent>
             </Card>
             
-            {showMoreInfo[index] && (
+            {showMoreInfo[step.id] && (
               <Card className="bg-accent border-border">
                 <CardContent className="pt-6">
                   <div className="flex items-start space-x-3">
