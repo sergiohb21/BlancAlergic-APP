@@ -219,32 +219,11 @@ export const arrayAlergias: AlergiaType[] = [
     KUA_Litro: 7.0,
   },
   {
-    name: "Pimiento rojo",
-    isAlergic: true,
-    intensity: "Alta",
-    category: "Vegetales",
-    KUA_Litro: 5.0,
-  },
-  {
-    name: "Aguacate",
-    isAlergic: true,
-    intensity: "Alta",
-    category: "Vegetales",
-    KUA_Litro: 5.0,
-  },
-  {
     name: "Paraguaya",
     isAlergic: true,
     intensity: "Alta",
     category: "Vegetales",
     KUA_Litro: 14.0,
-  },
-  {
-    name: "Pimiento verde",
-    isAlergic: true,
-    intensity: "Alta",
-    category: "Vegetales",
-    KUA_Litro: 5.0,
   },
   {
     name: "Hierba timonía",
