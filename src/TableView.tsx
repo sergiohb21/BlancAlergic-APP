@@ -1,14 +1,18 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAllergies } from "./hooks/useAllergies";
-import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, CheckCircle, AlertCircle, Filter, TrendingUp } from "lucide-react";
 import { AlergiaType } from "./const/alergias";
 
 function TableView(): JSX.Element {
   const { allergies, filteredAllergies, sortBy, sortOrder, setSortBy, setSortOrder, filterAllergies } = useAllergies();
   
-  const displayAllergies = filteredAllergies.length > 0 ? filteredAllergies : allergies;
+  const displayAllergies = filteredAllergies.length > 0 ? filteredAllergies : allergies.filter(a => a.isAlergic);
+
+  // Calculate statistics
+  const highRiskAllergies = displayAllergies.filter(a => a.intensity.toLowerCase() === 'alta' || a.intensity.toLowerCase() === 'alto').length;
+  const totalAllergies = displayAllergies.length;
 
   const handleSort = (field: keyof AlergiaType) => {
     if (field === sortBy) {
@@ -41,90 +45,129 @@ function TableView(): JSX.Element {
     }
   };
 
+  const getIntensityIcon = (intensity: string) => {
+    switch (intensity.toLowerCase()) {
+      case 'alta':
+      case 'alto':
+        return <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />;
+      case 'media':
+      case 'medio':
+        return <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />;
+      case 'baja':
+      case 'bajo':
+        return <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />;
+      default:
+        return null;
+    }
+  };
+
+  const getIntensityColor = (intensity: string) => {
+    switch (intensity.toLowerCase()) {
+      case 'alta':
+      case 'alto':
+        return 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/20';
+      case 'media':
+      case 'medio':
+        return 'border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950/20';
+      case 'baja':
+      case 'bajo':
+        return 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20';
+      default:
+        return 'border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950/20';
+    }
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2 text-foreground">Tabla de Alergias</h1>
-        <p className="text-muted-foreground">
-          Vista completa de las alergias detectadas con su información detallada
+    <div className="container mx-auto px-4 py-6 space-y-6">
+      {/* Header */}
+      <div className="text-center">
+        <h1 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">📋 Tabla de Alergias</h1>
+        <p className="text-muted-foreground text-sm md:text-base">
+          Información detallada de tus alergias detectadas
         </p>
       </div>
-      
-      <div className="rounded-md border dark:border-border/60 shadow-sm dark:shadow-md">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort('name')}
-                  className="h-auto p-0 font-semibold hover:bg-transparent text-foreground dark:text-foreground/90"
-                >
-                  <div className="flex items-center space-x-1">
-                    <span>Nombre</span>
-                    {getSortIcon('name')}
-                  </div>
-                </Button>
-              </TableHead>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort('intensity')}
-                  className="h-auto p-0 font-semibold hover:bg-transparent text-foreground dark:text-foreground/90"
-                >
-                  <div className="flex items-center space-x-1">
-                    <span>Intensidad</span>
-                    {getSortIcon('intensity')}
-                  </div>
-                </Button>
-              </TableHead>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort('category')}
-                  className="h-auto p-0 font-semibold hover:bg-transparent text-foreground dark:text-foreground/90"
-                >
-                  <div className="flex items-center space-x-1">
-                    <span>Categoría</span>
-                    {getSortIcon('category')}
-                  </div>
-                </Button>
-              </TableHead>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort('KUA_Litro')}
-                  className="h-auto p-0 font-semibold hover:bg-transparent text-foreground dark:text-foreground/90"
-                >
-                  <div className="flex items-center space-x-1">
-                    <span>KUA/L</span>
-                    {getSortIcon('KUA_Litro')}
-                  </div>
-                </Button>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {displayAllergies.map((alergia, index) => (
-              <TableRow key={index}>
-                <TableCell className="font-medium text-foreground">{alergia.name}</TableCell>
-                <TableCell>
-                  <Badge variant={getIntensityVariant(alergia.intensity)}>
-                    {alergia.intensity}
-                  </Badge>
-                </TableCell>
-                <TableCell>{alergia.category}</TableCell>
-                <TableCell className="text-right">
-                  {alergia.KUA_Litro}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-2 gap-4">
+        <Card className="text-center p-4">
+          <div className="text-2xl md:text-3xl font-bold text-red-600 dark:text-red-400">
+            {highRiskAllergies}
+          </div>
+          <div className="text-xs md:text-sm text-muted-foreground">Riesgo Alto</div>
+        </Card>
+        <Card className="text-center p-4">
+          <div className="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
+            {totalAllergies}
+          </div>
+          <div className="text-xs md:text-sm text-muted-foreground">Total Alergias</div>
+        </Card>
       </div>
-      
-      <div className="mt-4 text-sm text-muted-foreground text-center">
-        Mostrando {displayAllergies.length} alergias
+
+      {/* Sorting Controls */}
+      <div className="flex flex-wrap gap-2 justify-center">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleSort('name')}
+          className="flex items-center gap-2 text-sm"
+        >
+          Nombre {getSortIcon('name')}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleSort('intensity')}
+          className="flex items-center gap-2 text-sm"
+        >
+          Intensidad {getSortIcon('intensity')}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleSort('category')}
+          className="flex items-center gap-2 text-sm"
+        >
+          Categoría {getSortIcon('category')}
+        </Button>
+      </div>
+
+      {/* Allergy Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {displayAllergies.map((alergia, index) => (
+          <Card key={index} className={`p-4 hover:shadow-md transition-shadow duration-200 ${getIntensityColor(alergia.intensity)}`}>
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-foreground mb-1">
+                  {alergia.name}
+                </h3>
+                <Badge variant={getIntensityVariant(alergia.intensity)} className="text-xs">
+                  {alergia.intensity}
+                </Badge>
+              </div>
+              <div className="ml-2">
+                {getIntensityIcon(alergia.intensity)}
+              </div>
+            </div>
+
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Categoría:</span>
+                <span className="font-medium">{alergia.category}</span>
+              </div>
+              {alergia.KUA_Litro && (
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">KUA/Litro:</span>
+                  <span className="font-medium">{alergia.KUA_Litro}</span>
+                </div>
+              )}
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Footer */}
+      <div className="text-center text-sm text-muted-foreground">
+        Mostrando {displayAllergies.length} alergias detectadas
       </div>
     </div>
   );
