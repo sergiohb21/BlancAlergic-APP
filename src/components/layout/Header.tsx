@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ModeToggle } from '@/components/mode-toggle';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Menu, Home, Search, AlertTriangle, Table, Share, Download } from 'lucide-react';
+import { logger } from '@/utils/logger';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -39,9 +40,9 @@ export function Header() {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the A2HS prompt');
+          logger.info('User accepted the A2HS prompt');
         } else {
-          console.log('User dismissed the A2HS prompt');
+          logger.info('User dismissed the A2HS prompt');
         }
         setDeferredPrompt(null);
         setIsInstallable(false);

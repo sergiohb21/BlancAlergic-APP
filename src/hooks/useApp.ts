@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import { AppContext } from '@/contexts/AppContext';
 
-// Hook para usar el contexto
 export function useApp() {
   const context = useContext(AppContext);
   if (!context) {

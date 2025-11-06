@@ -2,7 +2,7 @@ import { Card} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAllergies } from "./hooks/useAllergies";
-import { ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, CheckCircle, AlertCircle, Filter, TrendingUp } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, CheckCircle, AlertCircle } from "lucide-react";
 import { AlergiaType } from "./const/alergias";
 
 function TableView(): JSX.Element {
