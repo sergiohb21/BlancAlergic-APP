@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useAllergies } from "./contexts/AppContext";
+import { useAllergies } from "./hooks/useAllergies";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { AlergiaType } from "./const/alergias";
 

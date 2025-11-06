@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useAllergies } from '@/contexts/AppContext';
+import { useAllergies } from '@/hooks/useAllergies';
 import { arrayAlergias } from '@/const/alergias';
 
 interface AppInitializerProps {

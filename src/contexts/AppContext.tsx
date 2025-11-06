@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useReducer, ReactNode, useMemo } from 'react';
+import React, { createContext, useReducer, ReactNode, useMemo } from 'react';
 import { AlergiaType, AllergyIntensity, AllergyCategory } from '@/const/alergias';
 
 // Tipos para el estado de la aplicación
-interface AppState {
+export interface AppState {
   allergies: AlergiaType[];
   filteredAllergies: AlergiaType[];
   searchQuery: string;
@@ -129,7 +129,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
 }
 
 // Contexto
-const AppContext = createContext<{
+export const AppContext = createContext<{
   state: AppState;
   dispatch: React.Dispatch<AppAction>;
   actions: {
@@ -204,44 +204,3 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Hook para usar el contexto
-export function useApp() {
-  const context = useContext(AppContext);
-  if (!context) {
-    throw new Error('useApp must be used within an AppProvider');
-  }
-  return context;
-}
-
-// Hook personalizados para funciones específicas
-export function useAllergies() {
-  const { state, actions } = useApp();
-  return {
-    allergies: state.allergies,
-    filteredAllergies: state.filteredAllergies,
-    searchQuery: state.searchQuery,
-    selectedCategory: state.selectedCategory,
-    selectedIntensity: state.selectedIntensity,
-    sortBy: state.sortBy,
-    sortOrder: state.sortOrder,
-    isLoading: state.isLoading,
-    error: state.error,
-    ...actions
-  };
-}
-
-export function useSearch() {
-  const { searchQuery, setSearchQuery, filterAllergies } = useAllergies();
-  
-  const debouncedSearch = React.useCallback(
-    (query: string) => {
-      setSearchQuery(query);
-      setTimeout(() => {
-        filterAllergies();
-      }, 300);
-    },
-    [setSearchQuery, filterAllergies]
-  );
-  
-  return { searchQuery, debouncedSearch };
-}

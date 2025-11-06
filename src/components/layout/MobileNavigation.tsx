@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Home, Search, AlertTriangle, Share } from 'lucide-react';
+import { Home, Search, AlertTriangle, Table, Share } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 
 interface NavigationItem {
@@ -17,6 +17,7 @@ export function MobileNavigation() {
   const navigation = [
     { name: 'Inicio', href: '/', icon: Home },
     { name: 'Alergias', href: '/buscarAlergias', icon: Search },
+    { name: 'Tabla', href: '/tablaAlergias', icon: Table },
     { name: 'Emergencias', href: '/emergencias', icon: AlertTriangle },
     { name: 'Compartir', href: '#', icon: Share, action: 'share' },
   ];

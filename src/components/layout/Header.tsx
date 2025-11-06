@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ModeToggle } from '@/components/mode-toggle';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Menu, Home, Search, AlertTriangle, Table, Share, Download } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -129,6 +129,10 @@ export function Header() {
             </Button>
           </SheetTrigger>
           <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+            <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
+            <SheetDescription className="sr-only">
+              Panel de navegación con acceso a todas las secciones de la aplicación de alergias
+            </SheetDescription>
             <div className="flex flex-col space-y-4 mt-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-foreground">Menú</h2>
