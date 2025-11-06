@@ -6,26 +6,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Search, CheckCircle, X } from 'lucide-react';
 import { AlergiaType } from '@/const/alergias';
-import { getIntensityVariant, getIntensityIcon } from '@/utils/allergy-utils';
+import { getIntensityVariant, getIntensityIcon, getAllergyStatusIcon, getAllergyStatusLabel, getAllergyAriaProps, getAllergyStatusId, getAccessibleColorClasses } from '@/utils/allergy-utils';
 import { MIN_SEARCH_LENGTH, DEBOUNCE_DELAY, ALLERGY_CATEGORIES } from '@/utils/constants';
+import MedicalErrorBoundary from '@/components/MedicalErrorBoundary';
 
 
-function AllergyCard({ allergy, showCategoryInfo = false }: {
+const AllergyCard = React.memo(({ allergy, showCategoryInfo = false }: {
   allergy: AlergiaType;
   showCategoryInfo?: boolean;
-}) {
+}) => {
+  const statusId = getAllergyStatusId(allergy.name);
+  const ariaProps = getAllergyAriaProps(allergy.isAlergic, allergy.name, allergy.intensity);
+  const statusLabel = getAllergyStatusLabel(allergy.isAlergic, allergy.intensity);
+
   return (
-    <Card className={`hover:shadow-md transition-shadow duration-200 ${
-      !allergy.isAlergic ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20' : ''
-    }`}>
+    <Card
+      className={`hover:shadow-md transition-shadow duration-200 ${
+        getAccessibleColorClasses(allergy.isAlergic, allergy.intensity)
+      }`}
+      {...ariaProps}
+    >
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">{allergy.name}</CardTitle>
           <div className="flex items-center gap-2">
-            {!allergy.isAlergic && (
-              <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-            )}
-            {getIntensityIcon(allergy.intensity)}
+            {getAllergyStatusIcon(allergy.isAlergic)}
+            {allergy.isAlergic && getIntensityIcon(allergy.intensity)}
           </div>
         </div>
         <div className="flex items-center space-x-2">
@@ -38,25 +44,42 @@ function AllergyCard({ allergy, showCategoryInfo = false }: {
             ? getIntensityVariant(allergy.intensity)
             : 'secondary'
           }>
-            {allergy.isAlergic ? allergy.intensity : 'Seguro'}
+            {statusLabel}
           </Badge>
         </div>
       </CardHeader>
       <CardContent className="pt-0">
+        {/* Hidden description for screen readers */}
+        <div id={statusId} className="sr-only">
+          {allergy.name} - {allergy.isAlergic
+            ? `ALÉRGICO - Intensidad: ${allergy.intensity}. NO CONSUMIR - Reacción alérgica confirmada`
+            : 'SEGURO - Sin alergia detectada. Blanca puede consumir este alimento'
+          }
+        </div>
+
         {allergy.KUA_Litro && (
           <CardDescription className="text-sm">
             Nivel de alergia: {allergy.KUA_Litro} KUA/L
           </CardDescription>
         )}
         {!allergy.isAlergic && (
-          <CardDescription className="text-sm text-green-600 dark:text-green-400 mt-2">
+          <CardDescription className="text-sm text-teal-600 dark:text-teal-400 mt-2">
             ✅ Blanca puede consumir este alimento
           </CardDescription>
         )}
       </CardContent>
     </Card>
   );
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison function for memoization
+  return (
+    prevProps.allergy.name === nextProps.allergy.name &&
+    prevProps.allergy.isAlergic === nextProps.allergy.isAlergic &&
+    prevProps.allergy.intensity === nextProps.allergy.intensity &&
+    prevProps.allergy.KUA_Litro === nextProps.allergy.KUA_Litro &&
+    prevProps.showCategoryInfo === nextProps.showCategoryInfo
+  );
+});
 
 export default function InputSearch() {
   const { allergies, setSearchQuery, filterAllergies } = useAllergies();
@@ -139,14 +162,15 @@ export default function InputSearch() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Search Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-foreground">Buscar Alergias</h1>
-        <p className="text-muted-foreground">
-          Consulta si un alimento es alergénico para Blanca
-        </p>
-      </div>
+    <MedicalErrorBoundary componentName="InputSearch" showEmergencyInfo={true}>
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Search Header */}
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl font-bold text-foreground">Buscar Alergias</h1>
+          <p className="text-muted-foreground">
+            Consulta si un alimento es alergénico para Blanca
+          </p>
+        </div>
 
       {/* Search Input */}
       <div className="relative">
@@ -262,8 +286,8 @@ export default function InputSearch() {
                 <div className="space-y-6">
                   {currentResults.filter((a: AlergiaType) => a.isAlergic).length > 0 && (
                     <div>
-                      <h3 className="text-lg font-medium text-red-600 dark:text-red-400 mb-3">
-                        ⚠️ No puede comer
+                      <h3 className="text-lg font-medium text-purple-600 dark:text-purple-400 mb-3">
+                        ❌ NO PUEDE COMER - Alérgico
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {currentResults
@@ -278,8 +302,8 @@ export default function InputSearch() {
 
                   {currentResults.filter((a: AlergiaType) => !a.isAlergic).length > 0 && (
                     <div>
-                      <h3 className="text-lg font-medium text-green-600 dark:text-green-400 mb-3">
-                        ✅ Sí puede comer
+                      <h3 className="text-lg font-medium text-teal-600 dark:text-teal-400 mb-3">
+                        ✅ SÍ PUEDE COMER - Seguro
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {currentResults
@@ -323,6 +347,7 @@ export default function InputSearch() {
           )}
         </div>
       )}
-    </div>
+      </div>
+    </MedicalErrorBoundary>
   );
 }
