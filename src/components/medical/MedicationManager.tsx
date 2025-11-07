@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MedicationRecord } from '../../firebase/types';
+import { logger } from '@/utils/logger';
 
 interface MedicationFormData {
   name: string;
@@ -122,7 +123,7 @@ export const MedicationManager: React.FC = () => {
 
   const handleSaveMedication = () => {
     // TODO: Implement Firebase save functionality
-    console.log('Saving medication:', formData);
+    logger.debug('Saving medication');
 
     const newMedication: MedicationRecord = {
       id: editingMedication?.id || Date.now().toString(),

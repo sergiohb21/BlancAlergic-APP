@@ -167,7 +167,7 @@ export default function InputSearch() {
         {/* Search Header */}
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold text-foreground">Buscar Alergias</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground dark:text-gray-300">
             Consulta si un alimento es alergénico para Blanca
           </p>
         </div>
@@ -175,7 +175,7 @@ export default function InputSearch() {
       {/* Search Input */}
       <div className="relative">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground dark:text-gray-400 h-4 w-4" />
           <Input
             type="text"
             placeholder={searchMode === 'category'
@@ -199,7 +199,7 @@ export default function InputSearch() {
         </div>
 
         {searchMode === 'name' && localQuery.length > 0 && localQuery.length <= MIN_SEARCH_LENGTH && (
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="text-sm text-muted-foreground dark:text-gray-300 mt-2">
             Escribe al menos {MIN_SEARCH_LENGTH + 1} caracteres para buscar...
           </p>
         )}
@@ -335,7 +335,7 @@ export default function InputSearch() {
                   <h3 className="text-lg font-semibold text-green-800 dark:text-green-200">
                     {searchMode === 'category' ? 'Categoría segura' : '¡Buena noticia!'}
                   </h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground dark:text-gray-300">
                     {searchMode === 'category'
                       ? `Blanca no tiene alergias en la categoría ${selectedCategory}`
                       : <>Blanca no es alérgica a <strong>{localQuery}</strong></>

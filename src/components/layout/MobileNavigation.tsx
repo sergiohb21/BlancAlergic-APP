@@ -1,13 +1,12 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Home, Search, AlertTriangle, Table, Share } from 'lucide-react';
+import { Home, Search, AlertTriangle, Table, Heart } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 
 interface NavigationItem {
   name: string;
   href: string;
   icon: LucideIcon;
-  action?: 'share' | string;
 }
 
 export function MobileNavigation() {
@@ -19,28 +18,11 @@ export function MobileNavigation() {
     { name: 'Alergias', href: '/buscarAlergias', icon: Search },
     { name: 'Tabla', href: '/tablaAlergias', icon: Table },
     { name: 'Emergencias', href: '/emergencias', icon: AlertTriangle },
-    { name: 'Compartir', href: '#', icon: Share, action: 'share' },
+    { name: 'Historial', href: '/historial-medico', icon: Heart },
   ];
 
-  const handleShareWhatsApp = () => {
-    const message = `🚨 ¡Alerta de Alergias! 🚨
-    
-    ¡Hey! ¿Sabías que Blanca tiene una app exclusiva para manejar sus alergias? 🌟
-    Si alguna vez te has preguntado si esa comida que vas a preparar le hará ver las estrellas 🌟 o visitar el hospital 🚑, ¡esta app es la solución!
-  
-    🔗 Échale un vistazo aquí: https://sergiohb21.github.io/BlancAlergic-APP/
-  
-    ¡Comparte y mantén a Blanca libre de sorpresas indeseadas! 🎉`;
-
-    window.open(`whatsapp://send?text=${encodeURIComponent(message)}`);
-  };
-
   const handleNavigation = (item: NavigationItem) => {
-    if (item.action === 'share') {
-      handleShareWhatsApp();
-    } else {
-      navigate(item.href);
-    }
+    navigate(item.href);
   };
 
   const isActive = (href: string) => location.pathname === href;
@@ -56,8 +38,8 @@ export function MobileNavigation() {
               size="sm"
               onClick={() => handleNavigation(item)}
               className={`flex flex-col items-center space-y-1 h-auto py-2 px-3 rounded-lg transition-colors ${
-                isActive(item.href) 
-                  ? 'text-primary bg-primary/10 dark:bg-primary/20 border border-primary/30 dark:border-primary/40 shadow-sm' 
+                isActive(item.href)
+                  ? 'text-primary bg-primary/10 dark:bg-primary/20 border border-primary/30 dark:border-primary/40 shadow-sm'
                   : 'text-muted-foreground hover:text-primary hover:bg-muted/30 dark:hover:bg-muted/20'
               }`}
             >

@@ -2,7 +2,6 @@ import * as React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import {
   Activity,
@@ -13,9 +12,7 @@ import {
   Shield,
   TrendingUp,
   Phone,
-  Download,
-  Printer
-} from 'lucide-react';
+  } from 'lucide-react';
 import { MedicalStatistics, RiskAssessment } from '@/types/medical';
 import { medicalUtils } from '@/lib/medical-data';
 import { cn } from '@/lib/utils';
@@ -26,8 +23,6 @@ interface MedicalDashboardProps {
   patientName: string;
   patientAge: number;
   lastTestDate: Date | null;
-  onExport: (format: 'pdf' | 'csv') => void;
-  onPrint: () => void;
 }
 
 const containerVariants = {
@@ -72,9 +67,7 @@ const MedicalDashboard: React.FC<MedicalDashboardProps> = ({
   patientName,
   patientAge,
   lastTestDate,
-  onExport,
-  onPrint
-}) => {
+  }) => {
   const riskConfig = riskLevelConfig[riskAssessment.overallRisk];
 
   const StatCard = React.memo(({
@@ -131,26 +124,6 @@ const MedicalDashboard: React.FC<MedicalDashboardProps> = ({
               <CardDescription className="text-lg mt-2">
                 <span className="font-medium">{patientName}</span> • {patientAge} años
               </CardDescription>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onExport('pdf')}
-                className="flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" />
-                PDF
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onPrint}
-                className="flex items-center gap-2"
-              >
-                <Printer className="h-4 w-4" />
-                Imprimir
-              </Button>
             </div>
           </div>
         </CardHeader>

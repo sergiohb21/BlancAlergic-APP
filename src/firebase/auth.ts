@@ -13,6 +13,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from './config';
 import { FirebaseUser, MedicalProfile, SyncStatus } from './types';
 import { arrayAlergias } from '@/const/alergias';
+import { logger } from '@/utils/logger';
 
 // Provider para Google Authentication
 const googleProvider = new GoogleAuthProvider();
@@ -174,7 +175,7 @@ const migratePublicAllergiesToProfile = async (userId: string): Promise<void> =>
       await setDoc(allergyRef, allergyRecord);
     }
 
-    console.log(`Se han migrado ${publicAllergies.length} alergias públicas al perfil del usuario ${userId}`);
+    logger.info(`Se han migrado ${publicAllergies.length} alergias públicas al perfil del usuario ${userId}`);
   } catch (error) {
     console.error('Error migrando alergias públicas:', error);
     // No lanzamos el error para no interrumpir el proceso de login

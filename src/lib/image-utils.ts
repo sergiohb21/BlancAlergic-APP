@@ -1,3 +1,5 @@
+import { logger } from '@/utils/logger';
+
 export interface ImageConfig {
   quality: number;
   format: string[];
@@ -91,7 +93,7 @@ export const preloadEmergencyImage = (src: string): Promise<void> => {
 export const preloadCriticalImages = async (imagePaths: string[]): Promise<void> => {
   try {
     await Promise.all(imagePaths.map(path => preloadEmergencyImage(path)));
-    console.log('✓ All critical emergency images preloaded');
+    logger.debug('All critical emergency images preloaded');
   } catch (error) {
     console.error('❌ Failed to preload emergency images:', error);
   }

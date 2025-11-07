@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LabResultRecord } from '../../firebase/types';
+import { logger } from '@/utils/logger';
 
 interface LabResultFormData {
   testName: string;
@@ -136,7 +137,7 @@ export const LabResultsManager: React.FC = () => {
 
   const handleSaveResult = () => {
     // TODO: Implement Firebase save functionality
-    console.log('Saving lab result:', formData);
+    logger.debug('Saving lab result');
 
     const newLabResult: LabResultRecord = {
       id: editingResult?.id || Date.now().toString(),

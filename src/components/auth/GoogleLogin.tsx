@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { logger } from '@/utils/logger';
 
 interface GoogleLoginProps {
   className?: string;
@@ -23,7 +24,7 @@ export const GoogleLogin: React.FC<GoogleLoginProps> = ({
       // Si llegamos aquí, el popup fue exitoso
       onSuccess?.();
     } catch (error: unknown) {
-      console.error('Error en GoogleLogin:', error);
+      logger.error({ msg: 'Error en GoogleLogin', error });
 
       // Si es un redirect iniciado, mostrar mensaje diferente
       if (error instanceof Error && error.message === 'REDIRECT_INITIATED') {

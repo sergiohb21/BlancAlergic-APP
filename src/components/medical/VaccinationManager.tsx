@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { VaccinationRecord } from '../../firebase/types';
+import { logger } from '@/utils/logger';
 
 interface VaccinationFormData {
   vaccineName: string;
@@ -103,7 +104,7 @@ export const VaccinationManager: React.FC = () => {
 
   const handleSaveVaccination = () => {
     // TODO: Implement Firebase save functionality
-    console.log('Saving vaccination:', formData);
+    logger.debug('Saving vaccination');
 
     const newVaccination: VaccinationRecord = {
       id: editingVaccination?.id || Date.now().toString(),

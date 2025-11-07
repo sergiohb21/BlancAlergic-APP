@@ -35,7 +35,7 @@ function Layout({ children }: LayoutProps) {
                   Gestión de Alergias
                   <span className="block text-primary">BlancAlergic</span>
                 </h1>
-                <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                <p className="text-xl text-muted-foreground dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
                   Sistema integral para el monitoreo y gestión de alergias alimentarias.
                   Accede rápido a información crítica y mantén a Blanca segura.
                 </p>

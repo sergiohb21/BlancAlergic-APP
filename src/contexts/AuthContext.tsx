@@ -2,6 +2,7 @@ import React, { createContext, useEffect, useState, ReactNode } from 'react';
 import { onAuthStateChanged, signOutUser, signInWithGoogle, getMedicalProfile, handleRedirectResult } from '../firebase/auth';
 import { FirebaseUser, MedicalProfile, AuthContextType, SyncStatus } from '../firebase/types';
 import { formatFirebaseUser, getSyncStatus } from '../firebase/auth';
+import { logger } from '@/utils/logger';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -40,7 +41,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               setSyncStatus(getSyncStatus());
             }
           } catch (error) {
-            console.error('Error en AuthContext:', error);
+            logger.error({ msg: 'Error en AuthContext', error });
             // En caso de error, limpiar estado
             setUser(null);
             setMedicalProfile(null);
@@ -51,7 +52,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         return unsubscribe;
       } catch (error) {
-        console.error('Error inicializando autenticación:', error);
+        logger.error({ msg: 'Error inicializando autenticación', error });
         setLoading(false);
         return () => {};
       }
@@ -131,7 +132,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         lastSyncAt: new Date().toISOString()
       }));
     } catch (error) {
-      console.error('Error refrescando perfil médico:', error);
+      logger.error({ msg: 'Error refrescando perfil médico', error });
       throw error;
     }
   };

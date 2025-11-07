@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfileManagement } from '../../hooks/useProfileManagement';
 import { useAuth } from '../../hooks/useAuth';
+import { logger } from '@/utils/logger';
 
 export const SimpleProfileEdit: React.FC = () => {
   const { user } = useAuth();
@@ -33,7 +34,7 @@ export const SimpleProfileEdit: React.FC = () => {
       await updateProfile(formData);
       setIsEditing(false);
     } catch (err) {
-      console.error('Error saving profile:', err);
+      logger.error({ msg: 'Error saving profile', error: err });
     }
   };
 
@@ -45,7 +46,7 @@ export const SimpleProfileEdit: React.FC = () => {
       setUploadingPhoto(true);
       await uploadProfilePhoto(file);
     } catch (err) {
-      console.error('Error uploading photo:', err);
+      logger.error({ msg: 'Error uploading photo', error: err });
     } finally {
       setUploadingPhoto(false);
     }
@@ -96,22 +97,22 @@ export const SimpleProfileEdit: React.FC = () => {
         </div>
         <div className="flex items-center space-x-2">
           <div className={`w-3 h-3 rounded-full ${getSyncStatusColor()}`}></div>
-          <span className="text-sm text-gray-600">{getSyncStatusText()}</span>
+          <span className="text-sm text-muted-foreground">{getSyncStatusText()}</span>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded mb-4">
           {error}
         </div>
       )}
 
       {/* Profile Photo Section */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-200 mb-6">
+      <div className="bg-card rounded-lg shadow-md border border-border mb-6">
         <div className="p-6">
           <h3 className="text-lg font-semibold mb-4">Foto de Perfil</h3>
           <div className="flex items-center space-x-4">
-            <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center overflow-hidden">
               {profile?.photoURL || user?.photoURL ? (
                 <img
                   src={profile?.photoURL || user?.photoURL || undefined}
@@ -119,7 +120,7 @@ export const SimpleProfileEdit: React.FC = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="text-gray-600 text-xl">
+                <span className="text-muted-foreground text-xl">
                   {profile?.displayName?.charAt(0) || user?.displayName?.charAt(0) || 'U'}
                 </span>
               )}
@@ -149,7 +150,7 @@ export const SimpleProfileEdit: React.FC = () => {
                   </>
                 )}
               </button>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Formatos: JPG, PNG. Tamaño máximo: 5MB
               </p>
             </div>
@@ -158,7 +159,7 @@ export const SimpleProfileEdit: React.FC = () => {
       </div>
 
       {/* Personal Information */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-200 mb-6">
+      <div className="bg-card rounded-lg shadow-md border border-border mb-6">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Información Personal</h3>
@@ -176,7 +177,7 @@ export const SimpleProfileEdit: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Nombre Completo
               </label>
               <input
@@ -184,12 +185,12 @@ export const SimpleProfileEdit: React.FC = () => {
                 value={formData.displayName}
                 onChange={handleInputChange}
                 disabled={!isEditing}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full p-2 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-muted disabled:cursor-not-allowed"
                 placeholder="Tu nombre completo"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Correo Electrónico
               </label>
               <input
@@ -198,12 +199,12 @@ export const SimpleProfileEdit: React.FC = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 disabled={true}
-                className="w-full p-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
+                className="w-full p-2 border border-input rounded-md bg-muted cursor-not-allowed"
                 placeholder="tu@email.com"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 📞 Teléfono
               </label>
               <input
@@ -212,12 +213,12 @@ export const SimpleProfileEdit: React.FC = () => {
                 value={formData.phone}
                 onChange={handleInputChange}
                 disabled={!isEditing}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full p-2 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-muted disabled:cursor-not-allowed"
                 placeholder="+34 600 000 000"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 📅 Fecha de Nacimiento
               </label>
               <input
@@ -226,7 +227,7 @@ export const SimpleProfileEdit: React.FC = () => {
                 value={formData.birthDate}
                 onChange={handleInputChange}
                 disabled={!isEditing}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full p-2 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-muted disabled:cursor-not-allowed"
               />
             </div>
           </div>
@@ -234,12 +235,12 @@ export const SimpleProfileEdit: React.FC = () => {
       </div>
 
       {/* Emergency Contact */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-200 mb-6">
+      <div className="bg-card rounded-lg shadow-md border border-border mb-6">
         <div className="p-6">
           <h3 className="text-lg font-semibold mb-4">Contacto de Emergencia</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Nombre del Contacto
               </label>
               <input
@@ -247,12 +248,12 @@ export const SimpleProfileEdit: React.FC = () => {
                 value={formData.emergencyContact}
                 onChange={handleInputChange}
                 disabled={!isEditing}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full p-2 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-muted disabled:cursor-not-allowed"
                 placeholder="Nombre completo del contacto"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Teléfono de Emergencia
               </label>
               <input
@@ -261,7 +262,7 @@ export const SimpleProfileEdit: React.FC = () => {
                 value={formData.emergencyPhone}
                 onChange={handleInputChange}
                 disabled={!isEditing}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full p-2 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-muted disabled:cursor-not-allowed"
                 placeholder="+34 600 000 000"
               />
             </div>
@@ -270,12 +271,12 @@ export const SimpleProfileEdit: React.FC = () => {
       </div>
 
       {/* Medical Information */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-200 mb-6">
+      <div className="bg-card rounded-lg shadow-md border border-border mb-6">
         <div className="p-6">
           <h3 className="text-lg font-semibold mb-4">Información Médica</h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Tipo de Sangre
               </label>
               <select
@@ -283,7 +284,7 @@ export const SimpleProfileEdit: React.FC = () => {
                 value={formData.bloodType}
                 onChange={handleInputChange}
                 disabled={!isEditing}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full p-2 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-muted disabled:cursor-not-allowed"
               >
                 <option value="">Seleccionar tipo de sangre</option>
                 <option value="A+">A+</option>
@@ -297,7 +298,7 @@ export const SimpleProfileEdit: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Notas Médicas
               </label>
               <textarea
@@ -306,7 +307,7 @@ export const SimpleProfileEdit: React.FC = () => {
                 onChange={handleInputChange}
                 disabled={!isEditing}
                 rows={4}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full p-2 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-muted disabled:cursor-not-allowed"
                 placeholder="Información médica relevante, medicamentos habituales, condiciones crónicas, etc."
               />
             </div>
@@ -320,15 +321,15 @@ export const SimpleProfileEdit: React.FC = () => {
           <h3 className="text-lg font-semibold mb-4">Información de la Cuenta</h3>
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Proveedor:</span>
-              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">Google</span>
+              <span className="text-sm text-muted-foreground">Proveedor:</span>
+              <span className="px-2 py-1 bg-primary/10 text-primary rounded text-sm">Google</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">ID de Usuario:</span>
+              <span className="text-sm text-muted-foreground">ID de Usuario:</span>
               <span className="text-sm font-mono">{user?.uid?.substring(0, 8)}...</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Última actualización:</span>
+              <span className="text-sm text-muted-foreground">Última actualización:</span>
               <span className="text-sm">
                 {profile?.updatedAt ? new Date(profile.updatedAt).toLocaleDateString() : 'No disponible'}
               </span>

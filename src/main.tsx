@@ -5,7 +5,7 @@ import InputSearch from "./components/InputSearch.tsx";
 import TableView from "./TableView.tsx";
 import EmergencyView from "./EmergencyView.tsx";
 import Layout from "./Layout.tsx";
-import IntegratedMedicalMenu from "./components/medical/IntegratedMedicalMenu.tsx";
+import MedicalHistoryView from "./components/medical/MedicalHistoryView.tsx";
 import { SimpleProfileEdit } from "./components/medical/SimpleProfileEdit.tsx";
 import { AllergyManager } from "./components/medical/AllergyManager.tsx";
 import { MedicationManager } from "./components/medical/MedicationManager.tsx";
@@ -36,54 +36,56 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                   <Route path="tablaAlergias" element={<TableView />} />
                 </Route>
 
-                {/* Rutas médicas - protegidas, con Layout Médico */}
-                <Route path="/historial-medico" element={
-                  <ProtectedRoute>
-                    <IntegratedMedicalMenu />
-                  </ProtectedRoute>
-                } />
+                {/* Rutas médicas - protegidas, usan Layout principal */}
+                <Route path="/" element={<Layout><Outlet /></Layout>}>
+                  <Route path="historial-medico" element={
+                    <ProtectedRoute>
+                      <MedicalHistoryView />
+                    </ProtectedRoute>
+                  } />
 
-                <Route path="/perfil-medico" element={
-                  <ProtectedRoute>
-                    <SimpleProfileEdit />
-                  </ProtectedRoute>
-                } />
+                  <Route path="perfil-medico" element={
+                    <ProtectedRoute>
+                      <SimpleProfileEdit />
+                    </ProtectedRoute>
+                  } />
 
-                <Route path="/mis-alergias" element={
-                  <ProtectedRoute>
-                    <AllergyManager />
-                  </ProtectedRoute>
-                } />
+                  <Route path="mis-alergias" element={
+                    <ProtectedRoute>
+                      <AllergyManager />
+                    </ProtectedRoute>
+                  } />
 
-                <Route path="/medicamentos" element={
-                  <ProtectedRoute>
-                    <MedicationManager />
-                  </ProtectedRoute>
-                } />
+                  <Route path="medicamentos" element={
+                    <ProtectedRoute>
+                      <MedicationManager />
+                    </ProtectedRoute>
+                  } />
 
-                <Route path="/visitas-medicas" element={
-                  <ProtectedRoute>
-                    <MedicalRecordsManager />
-                  </ProtectedRoute>
-                } />
+                  <Route path="visitas-medicas" element={
+                    <ProtectedRoute>
+                      <MedicalRecordsManager />
+                    </ProtectedRoute>
+                  } />
 
-                <Route path="/vacunas" element={
-                  <ProtectedRoute>
-                    <VaccinationManager />
-                  </ProtectedRoute>
-                } />
+                  <Route path="vacunas" element={
+                    <ProtectedRoute>
+                      <VaccinationManager />
+                    </ProtectedRoute>
+                  } />
 
-                <Route path="/resultados-laboratorio" element={
-                  <ProtectedRoute>
-                    <LabResultsManager />
-                  </ProtectedRoute>
-                } />
+                  <Route path="resultados-laboratorio" element={
+                    <ProtectedRoute>
+                      <LabResultsManager />
+                    </ProtectedRoute>
+                  } />
 
-                <Route path="/informes-medicos" element={
-                  <ProtectedRoute>
-                    <DocumentManager />
-                  </ProtectedRoute>
-                } />
+                  <Route path="informes-medicos" element={
+                    <ProtectedRoute>
+                      <DocumentManager />
+                    </ProtectedRoute>
+                  } />
+                </Route>
               </Routes>
             </Router>
           </AppInitializer>
