@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Phone, Info, Heart, MapPin, User, Clock } from "lucide-react";
-import MedicalErrorBoundary from "@/components/MedicalErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { EmergencyTimer } from "@/components/EmergencyTimer";
 import { preloadCriticalImages } from "@/lib/image-utils";
 import { logger } from "@/utils/logger";
@@ -363,7 +363,7 @@ interface EmergencyInfo {
   timestamp: string;
 }
 
-function EmergencyView(): JSX.Element {
+const EmergencyView: React.FC = React.memo((): JSX.Element => {
   const [showMoreInfo, setShowMoreInfo] = useState<{ [key: string]: boolean }>(
     {}
   );
@@ -692,7 +692,7 @@ Alergias: ${emergencyInfo.allergies || 'No especificadas'}
   }, []);
 
   return (
-    <MedicalErrorBoundary componentName="EmergencyView" showEmergencyInfo={true}>
+    <ErrorBoundary mode="medical" componentName="EmergencyView" showEmergencyInfo={true}>
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Emergency Header with Timer */}
         <div className="text-center mb-8 space-y-6">
@@ -716,7 +716,7 @@ Alergias: ${emergencyInfo.allergies || 'No especificadas'}
         <div className="space-y-8">
           {/* Critical Emergency Actions - Full Width Priority */}
           {steps.filter(step => step.isEmergency).map((step) => (
-            <MedicalErrorBoundary
+            <ErrorBoundary
               key={step.id}
               componentName={`EmergencyStep-${step.id}`}
               showEmergencyInfo={step.id === 'llamar-112'}
@@ -733,13 +733,13 @@ Alergias: ${emergencyInfo.allergies || 'No especificadas'}
                   locationPermissionDenied={step.id === 'llamar-112' ? locationPermissionDenied : undefined}
                 />
               </div>
-            </MedicalErrorBoundary>
+            </ErrorBoundary>
           ))}
 
           {/* Informational Steps - Secondary Priority */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
             {steps.filter(step => !step.isEmergency).map((step) => (
-              <MedicalErrorBoundary
+              <ErrorBoundary
                 key={step.id}
                 componentName={`EmergencyStep-${step.id}`}
                 showEmergencyInfo={false}
@@ -749,7 +749,7 @@ Alergias: ${emergencyInfo.allergies || 'No especificadas'}
                   onToggleInfo={toggleMoreInfo}
                   showMoreInfo={!!showMoreInfo[step.id]}
                 />
-              </MedicalErrorBoundary>
+              </ErrorBoundary>
             ))}
           </div>
         </div>
@@ -769,8 +769,10 @@ Alergias: ${emergencyInfo.allergies || 'No especificadas'}
           </CardContent>
         </Card>
       </div>
-    </MedicalErrorBoundary>
+    </ErrorBoundary>
   );
-}
+});
+
+EmergencyView.displayName = 'EmergencyView';
 
 export default EmergencyView;

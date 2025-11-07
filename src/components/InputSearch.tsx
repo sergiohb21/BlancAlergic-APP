@@ -8,7 +8,7 @@ import { Search, CheckCircle, X } from 'lucide-react';
 import { AlergiaType } from '@/const/alergias';
 import { getIntensityVariant, getIntensityIcon, getAllergyStatusIcon, getAllergyStatusLabel, getAllergyAriaProps, getAllergyStatusId, getAccessibleColorClasses } from '@/utils/allergy-utils';
 import { MIN_SEARCH_LENGTH, DEBOUNCE_DELAY, ALLERGY_CATEGORIES } from '@/utils/constants';
-import MedicalErrorBoundary from '@/components/MedicalErrorBoundary';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const AllergyCard = React.memo(({ allergy, showCategoryInfo = false }: {
@@ -162,7 +162,7 @@ export default function InputSearch() {
   };
 
   return (
-    <MedicalErrorBoundary componentName="InputSearch" showEmergencyInfo={true}>
+    <ErrorBoundary mode="medical" componentName="InputSearch" showEmergencyInfo={true}>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Search Header */}
         <div className="text-center space-y-2">
@@ -348,6 +348,6 @@ export default function InputSearch() {
         </div>
       )}
       </div>
-    </MedicalErrorBoundary>
+    </ErrorBoundary>
   );
 }

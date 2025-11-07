@@ -1,11 +1,11 @@
 import AllergyTableSimple from "@/components/medical/AllergyTableSimple";
-import MedicalErrorBoundary from "@/components/MedicalErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { Card, CardContent } from "@/components/ui/card";
 import { Filter } from "lucide-react";
 
 function TableView(): JSX.Element {
   return (
-    <MedicalErrorBoundary componentName="TableView" showEmergencyInfo={true}>
+    <ErrorBoundary mode="medical" componentName="TableView" showEmergencyInfo={true}>
       <div className="space-y-6">
         {/* Simple Header */}
         <Card className="border-2">
@@ -27,7 +27,7 @@ function TableView(): JSX.Element {
         {/* Table Content */}
         <AllergyTableSimple />
       </div>
-    </MedicalErrorBoundary>
+    </ErrorBoundary>
   );
 }
 

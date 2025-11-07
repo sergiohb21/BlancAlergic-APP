@@ -6,7 +6,7 @@ import TableView from "./TableView.tsx";
 import EmergencyView from "./EmergencyView.tsx";
 import Layout from "./Layout.tsx";
 import MedicalHistoryView from "./components/medical/MedicalHistoryView.tsx";
-import { SimpleProfileEdit } from "./components/medical/SimpleProfileEdit.tsx";
+import { ProfileEditComponent } from "./components/medical/ProfileEditComponent.tsx";
 import { AllergyManager } from "./components/medical/AllergyManager.tsx";
 import { MedicationManager } from "./components/medical/MedicationManager.tsx";
 import { VaccinationManager } from "./components/medical/VaccinationManager.tsx";
@@ -46,7 +46,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
                   <Route path="perfil-medico" element={
                     <ProtectedRoute>
-                      <SimpleProfileEdit />
+                      <ProfileEditComponent mode="simple" showBackButton={true} />
                     </ProtectedRoute>
                   } />
 

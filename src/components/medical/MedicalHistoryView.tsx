@@ -9,23 +9,21 @@ import {
   ArrowLeft,
   User,
   Shield,
-  Activity,
   FileText,
-  Calendar,
   AlertTriangle,
   Heart,
   Download,
   Phone,
   LogOut,
   ChevronRight,
-  Syringe,
-  Stethoscope,
-  TestTube,
-  FileImage,
   Menu,
   Home,
   Search,
-  Table
+  Table,
+  Calendar,
+  Syringe,
+  TestTube,
+  FileImage
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { MedicalHistory } from './MedicalHistory';
@@ -71,7 +69,7 @@ interface MedicalHistoryViewProps {
 const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('history');
+  const [activeTab, setActiveTab] = useState<'history' | 'sections' | 'emergency'>('history');
   const [medicalData, setMedicalData] = useState<{
     profile: MedicalProfile | null;
     allergies: AllergyRecord[];
@@ -326,15 +324,11 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
       )}
 
       {/* Panel principal con tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 h-16 p-1 mt-6">
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'history' | 'sections' | 'emergency')} className="w-full">
+        <TabsList className="grid w-full grid-cols-3 h-16 p-1 mt-6">
           <TabsTrigger value="history" className="flex flex-col items-center justify-center gap-1 p-2">
             <FileText className="h-4 w-4" />
             <span className="text-xs font-medium">Historial</span>
-          </TabsTrigger>
-          <TabsTrigger value="dashboard" className="flex flex-col items-center justify-center gap-1 p-2">
-            <Activity className="h-4 w-4" />
-            <span className="text-xs font-medium">Dashboard</span>
           </TabsTrigger>
           <TabsTrigger value="sections" className="flex flex-col items-center justify-center gap-1 p-2">
             <Menu className="h-4 w-4" />
@@ -354,132 +348,7 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
           />
         </TabsContent>
 
-        {/* Tab de Dashboard */}
-        <TabsContent value="dashboard" className="mt-6 space-y-6">
-          {/* Estadísticas rápidas - Mobile First */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="bg-red-50 border-red-200">
-              <CardContent className="p-4 sm:p-6 text-center">
-                <Shield className="h-8 w-8 sm:h-10 sm:w-10 text-red-600 mx-auto mb-3" />
-                <div className="text-2xl sm:text-3xl font-bold text-red-600 mb-1">{stats.totalAllergies}</div>
-                <div className="text-sm sm:text-base text-red-700 font-medium">Alergias Activas</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-blue-50 border-blue-200">
-              <CardContent className="p-4 sm:p-6 text-center">
-                <FileText className="h-8 w-8 sm:h-10 sm:w-10 text-blue-600 mx-auto mb-3" />
-                <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-1">{stats.activeMedications}</div>
-                <div className="text-sm sm:text-base text-blue-700 font-medium">Medicamentos</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-green-50 border-green-200">
-              <CardContent className="p-4 sm:p-6 text-center">
-                <Calendar className="h-8 w-8 sm:h-10 sm:w-10 text-green-600 mx-auto mb-3" />
-                <div className="text-2xl sm:text-3xl font-bold text-green-600 mb-1">{stats.recentVisits}</div>
-                <div className="text-sm sm:text-base text-green-700 font-medium">Visitas Recientes</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-orange-50 border-orange-200">
-              <CardContent className="p-4 sm:p-6 text-center">
-                <Syringe className="h-8 w-8 sm:h-10 sm:w-10 text-orange-600 mx-auto mb-3" />
-                <div className="text-2xl sm:text-3xl font-bold text-orange-600 mb-1">{stats.upcomingVaccines}</div>
-                <div className="text-sm sm:text-base text-orange-700 font-medium">Vacunas Pendientes</div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Alergias críticas - Mobile First */}
-          {medicalData.allergies.filter(a => a.intensity === 'Alta').length > 0 && (
-            <Card className="border-red-200 bg-red-50/50">
-              <CardHeader>
-                <CardTitle className="text-red-700 flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5" />
-                  Alergias Críticas
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {medicalData.allergies
-                    .filter(allergy => allergy.intensity === 'Alta')
-                    .map((allergy) => (
-                      <div key={allergy.id} className="p-4 bg-white rounded-lg border border-red-200">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-3 h-3 bg-red-500 rounded-full flex-shrink-0"></div>
-                            <div>
-                              <div className="font-semibold text-sm sm:text-base">{allergy.name}</div>
-                              <Badge variant="destructive" className="text-xs mt-1">
-                                {allergy.intensity}
-                              </Badge>
-                            </div>
-                          </div>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleNavigate('/mis-alergias')}
-                            className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2"
-                          >
-                            Ver detalles
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Actividad reciente - Mobile First */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5" />
-                Actividad Médica Reciente
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {medicalData.visits.slice(0, 3).map((visit) => (
-                  <div key={visit.id} className="p-4 bg-muted/50 rounded-lg">
-                    <div className="flex flex-col gap-3">
-                      <div className="flex items-center gap-3">
-                        <Stethoscope className="h-5 w-5 text-blue-600 flex-shrink-0" />
-                        <div className="flex-1">
-                          <div className="font-semibold text-sm sm:text-base">{visit.reason}</div>
-                        </div>
-                      </div>
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <div className="text-sm text-muted-foreground">
-                          {new Date(visit.date).toLocaleDateString('es-ES', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric'
-                          })}
-                        </div>
-                        <div className="text-sm text-muted-foreground truncate">
-                          Dr. {visit.doctor}
-                        </div>
-                        <Badge variant="secondary" className="w-fit">
-                          {visit.type}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {medicalData.visits.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No hay visitas médicas registradas
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
+  
         {/* Tab de Secciones */}
         <TabsContent value="sections" className="mt-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">

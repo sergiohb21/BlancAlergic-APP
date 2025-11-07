@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ModeToggle } from '@/components/mode-toggle';
+import { ModeToggle } from '@/components/theme-provider';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Menu, Home, Search, AlertTriangle, Table, Share, Download, Heart, LogOut } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';

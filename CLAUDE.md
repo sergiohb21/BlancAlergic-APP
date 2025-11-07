@@ -21,7 +21,9 @@ npm run deploy     # Deploy to GitHub Pages using gh-pages
 ### Framework & Stack
 - **Frontend**: React 18.3.1 with TypeScript 5.2.2
 - **Build Tool**: Vite 5.3.1 with custom configuration for PWA and GitHub Pages deployment
-- **Styling**: BeerCSS (Material Design framework) with Material Dynamic Colors
+- **Styling**: Tailwind CSS 3.4.0 with Material Design colors and custom CSS variables
+- **UI Components**: Radix UI primitives with shadcn/ui components
+- **Theme Management**: Centralized theme system with light/dark/system modes
 - **Routing**: React Router DOM 6.24.0 with basename configuration for GitHub Pages
 - **PWA**: vite-plugin-pwa with auto-update and custom manifest
 

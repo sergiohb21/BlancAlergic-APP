@@ -13,17 +13,9 @@ import {
   Download,
   Heart
 } from 'lucide-react';
-import { arrayAlergias } from '@/const/alergias';
+import { arrayAlergias, type AlergiaType } from '@/const/alergias';
 import { cn } from '@/lib/utils';
 import { logger } from '@/utils/logger';
-
-interface AllergyType {
-  name: string;
-  isAlergic: boolean;
-  intensity: string;
-  category: string;
-  KUA_Litro?: number;
-}
 
 interface AllergyTableSimpleProps {
   className?: string;
@@ -32,7 +24,7 @@ interface AllergyTableSimpleProps {
 type SortField = 'name' | 'intensity' | 'category' | 'KUA_Litro';
 type SortDirection = 'asc' | 'desc';
 
-const AllergyTableSimple: React.FC<AllergyTableSimpleProps> = ({ className }) => {
+const AllergyTableSimple: React.FC<AllergyTableSimpleProps> = React.memo(({ className }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedIntensity, setSelectedIntensity] = useState<string>('all');
@@ -45,7 +37,7 @@ const AllergyTableSimple: React.FC<AllergyTableSimpleProps> = ({ className }) =>
 
   // Get unique categories
   const categories = useMemo(() => {
-    const cats = [...new Set(arrayAlergias.map((allergy: AllergyType) => allergy.category))];
+    const cats = [...new Set(arrayAlergias.map((allergy: AlergiaType) => allergy.category))];
     return cats.sort();
   }, []);
 
@@ -55,7 +47,7 @@ const AllergyTableSimple: React.FC<AllergyTableSimpleProps> = ({ className }) =>
 
     // Search filter
     if (searchTerm) {
-      filtered = filtered.filter((allergy: AllergyType) =>
+      filtered = filtered.filter((allergy: AlergiaType) =>
         allergy.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         allergy.category.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -63,21 +55,21 @@ const AllergyTableSimple: React.FC<AllergyTableSimpleProps> = ({ className }) =>
 
     // Category filter
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter((allergy: AllergyType) => allergy.category === selectedCategory);
+      filtered = filtered.filter((allergy: AlergiaType) => allergy.category === selectedCategory);
     }
 
     // Intensity filter
     if (selectedIntensity !== 'all') {
-      filtered = filtered.filter((allergy: AllergyType) => allergy.intensity === selectedIntensity);
+      filtered = filtered.filter((allergy: AlergiaType) => allergy.intensity === selectedIntensity);
     }
 
     // Show only allergic
     if (showOnlyAlergic) {
-      filtered = filtered.filter((allergy: AllergyType) => allergy.isAlergic);
+      filtered = filtered.filter((allergy: AlergiaType) => allergy.isAlergic);
     }
 
     // Sort
-    filtered.sort((a: AllergyType, b: AllergyType) => {
+    filtered.sort((a: AlergiaType, b: AlergiaType) => {
       let aValue: string | number;
       let bValue: string | number;
 
@@ -116,10 +108,10 @@ const AllergyTableSimple: React.FC<AllergyTableSimpleProps> = ({ className }) =>
   // Statistics
   const stats = useMemo(() => {
     const total = arrayAlergias.length;
-    const allergic = arrayAlergias.filter((a: AllergyType) => a.isAlergic).length;
-    const high = arrayAlergias.filter((a: AllergyType) => a.intensity === 'Alta' && a.isAlergic).length;
-    const medium = arrayAlergias.filter((a: AllergyType) => a.intensity === 'Media' && a.isAlergic).length;
-    const low = arrayAlergias.filter((a: AllergyType) => a.intensity === 'Baja' && a.isAlergic).length;
+    const allergic = arrayAlergias.filter((a: AlergiaType) => a.isAlergic).length;
+    const high = arrayAlergias.filter((a: AlergiaType) => a.intensity === 'Alta' && a.isAlergic).length;
+    const medium = arrayAlergias.filter((a: AlergiaType) => a.intensity === 'Media' && a.isAlergic).length;
+    const low = arrayAlergias.filter((a: AlergiaType) => a.intensity === 'Baja' && a.isAlergic).length;
 
     return { total, allergic, high, medium, low };
   }, []);
@@ -137,7 +129,7 @@ const AllergyTableSimple: React.FC<AllergyTableSimpleProps> = ({ className }) =>
     logger.info('Exporting allergy table data');
     const csvContent = [
       ['Nombre', 'Categoría', 'Intensidad', 'KUA/Litro', 'Es Alérgico'],
-      ...filteredAndSortedAllergies.map((allergy: AllergyType) => [
+      ...filteredAndSortedAllergies.map((allergy: AlergiaType) => [
         allergy.name,
         allergy.category,
         allergy.intensity,
@@ -383,7 +375,7 @@ const AllergyTableSimple: React.FC<AllergyTableSimpleProps> = ({ className }) =>
           animate={{ opacity: 1, y: 0 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
         >
-          {filteredAndSortedAllergies.map((allergy: AllergyType, index: number) => (
+          {filteredAndSortedAllergies.map((allergy: AlergiaType, index: number) => (
             <Card
               key={allergy.name}
               className={cn(
@@ -462,6 +454,8 @@ const AllergyTableSimple: React.FC<AllergyTableSimpleProps> = ({ className }) =>
       )}
     </div>
   );
-};
+});
+
+AllergyTableSimple.displayName = 'AllergyTableSimple';
 
 export default AllergyTableSimple;

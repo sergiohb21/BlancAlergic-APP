@@ -9,12 +9,10 @@ import {
   Filter,
   Download,
   Printer,
-  AlertTriangle,
   Shield,
   User,
   FileText,
   BarChart3,
-  Clock,
   ChevronDown
 } from 'lucide-react';
 import { MedicalDashboard } from './MedicalDashboard';
@@ -52,7 +50,7 @@ const MedicalHistory: React.FC<MedicalHistoryProps> = ({
   const [searchTerm, setSearchTerm] = React.useState('');
   const [selectedCategory, setSelectedCategory] = React.useState<string>('all');
   const [selectedRisk, setSelectedRisk] = React.useState<string>('all');
-  const [activeTab, setActiveTab] = React.useState('dashboard');
+  const [activeTab, setActiveTab] = React.useState<'dashboard' | 'records'>('dashboard');
   const [expandedCards, setExpandedCards] = React.useState<Set<string>>(new Set());
   const [showFilters, setShowFilters] = React.useState(false);
 
@@ -516,8 +514,8 @@ const MedicalHistory: React.FC<MedicalHistoryProps> = ({
 
       {/* Main Content */}
       <div className="mt-8">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 relative z-10 bg-background">
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'dashboard' | 'records')} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 relative z-10 bg-background">
           <TabsTrigger value="dashboard" className="flex items-center gap-2 py-3">
             <BarChart3 className="h-4 w-4" />
             Dashboard
@@ -525,14 +523,6 @@ const MedicalHistory: React.FC<MedicalHistoryProps> = ({
           <TabsTrigger value="records" className="flex items-center gap-2 py-3">
             <User className="h-4 w-4" />
             Registros
-          </TabsTrigger>
-          <TabsTrigger value="timeline" className="flex items-center gap-2 py-3">
-            <Clock className="h-4 w-4" />
-            Línea Tiempo
-          </TabsTrigger>
-          <TabsTrigger value="emergency" className="flex items-center gap-2 py-3">
-            <AlertTriangle className="h-4 w-4" />
-            Emergencia
           </TabsTrigger>
         </TabsList>
 
@@ -673,24 +663,7 @@ const MedicalHistory: React.FC<MedicalHistoryProps> = ({
           )}
         </TabsContent>
 
-        {/* Timeline Tab */}
-        <TabsContent value="timeline" className="mt-12 relative">
-          <div className="text-center py-12 text-muted-foreground">
-            <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <h3 className="text-lg font-medium mb-2">Línea de Tiempo Médica</h3>
-            <p className="text-sm">Esta función estará disponible próximamente</p>
-          </div>
-        </TabsContent>
-
-        {/* Emergency Tab */}
-        <TabsContent value="emergency" className="mt-12 relative">
-          <div className="text-center py-12 text-muted-foreground">
-            <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <h3 className="text-lg font-medium mb-2">Información de Emergencia</h3>
-            <p className="text-sm">Esta función estará disponible próximamente</p>
-          </div>
-        </TabsContent>
-      </Tabs>
+        </Tabs>
       </div>
     </motion.div>
   );
