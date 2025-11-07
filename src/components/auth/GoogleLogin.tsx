@@ -19,9 +19,18 @@ export const GoogleLogin: React.FC<GoogleLoginProps> = ({
     try {
       setLoading(true);
       await loginWithGoogle();
+
+      // Si llegamos aquí, el popup fue exitoso
       onSuccess?.();
     } catch (error: unknown) {
       console.error('Error en GoogleLogin:', error);
+
+      // Si es un redirect iniciado, mostrar mensaje diferente
+      if (error instanceof Error && error.message === 'REDIRECT_INITIATED') {
+        // No mostrar error, el redirect está en progreso
+        return;
+      }
+
       onError?.(error instanceof Error ? error : new Error('Unknown error'));
     } finally {
       setLoading(false);

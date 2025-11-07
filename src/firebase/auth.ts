@@ -1,5 +1,7 @@
 import {
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut,
   GoogleAuthProvider,
   User as AuthUser,
@@ -17,15 +19,17 @@ const googleProvider = new GoogleAuthProvider();
 googleProvider.addScope('email');
 googleProvider.addScope('profile');
 googleProvider.setCustomParameters({
-  prompt: 'consent',
+  prompt: 'select_account', // Mejor para login
   access_type: 'online'
 });
 
+
 /**
- * Iniciar sesión con Google
+ * Iniciar sesión con Google (con fallback automático)
  */
 export const signInWithGoogle = async (): Promise<UserCredential> => {
   try {
+    // Intentar primero con popup (mejor UX)
     const result = await signInWithPopup(auth, googleProvider);
 
     // Crear o actualizar perfil médico básico después del login
@@ -33,8 +37,45 @@ export const signInWithGoogle = async (): Promise<UserCredential> => {
 
     return result;
   } catch (error: unknown) {
+    const firebaseError = error as { code?: string; message?: string };
+    console.warn('Popup falló, intentando con redirect:', firebaseError.message);
+
+    // Si es error de popup cerrado o COOP, usar redirect
+    if (firebaseError.code === 'auth/popup-closed-by-user' ||
+        firebaseError.code === 'auth/cancelled-popup-request' ||
+        firebaseError.message?.includes('Cross-Origin-Opener-Policy')) {
+      try {
+        await signInWithRedirect(auth, googleProvider);
+        // Esto redirigirá la página, así que no continuaremos aquí
+        throw new Error('REDIRECT_INITIATED');
+      } catch (redirectError: unknown) {
+        console.error('Error en redirect:', redirectError);
+        throw new Error('No se pudo iniciar sesión. Intenta recargar la página.');
+      }
+    }
+
+    // Para otros errores, lanzar normalmente
     console.error('Error en Google Sign-In:', error);
     const errorMessage = error instanceof Error ? error.message : 'Error al iniciar sesión con Google';
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * Manejar resultado de redirect después del login
+ */
+export const handleRedirectResult = async (): Promise<UserCredential | null> => {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result) {
+      // Crear o actualizar perfil médico después del redirect
+      await createOrUpdateMedicalProfile(result.user);
+      return result;
+    }
+    return null;
+  } catch (error: unknown) {
+    console.error('Error manejando redirect result:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Error al procesar inicio de sesión';
     throw new Error(errorMessage);
   }
 };
