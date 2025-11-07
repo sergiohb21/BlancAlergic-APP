@@ -1,1 +1,1 @@
-if('serviceWorker' in navigator) navigator.serviceWorker.register('/BlancAlergic-APP/dev-sw.js?dev-sw', { scope: '/BlancAlergic-APP/', type: 'classic' })
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/BlancAlergic-APP/dev-sw.js?dev-sw', { scope: '/BlancAlergic-APP/', type: 'module' })

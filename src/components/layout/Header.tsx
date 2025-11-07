@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ModeToggle } from '@/components/mode-toggle';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import { Menu, Home, Search, AlertTriangle, Table, Share, Download } from 'lucide-react';
+import { Menu, Home, Search, AlertTriangle, Table, Share, Download, Heart } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
 import { logger } from '@/utils/logger';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -18,6 +19,7 @@ interface BeforeInstallPromptEvent extends Event {
 export function Header() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallableState, setIsInstallable] = useState(false);
 
@@ -55,7 +57,23 @@ export function Header() {
     { name: 'Buscar Alergias', href: '/buscarAlergias', icon: Search },
     { name: 'Emergencias', href: '/emergencias', icon: AlertTriangle },
     { name: 'Tabla Alergias', href: '/tablaAlergias', icon: Table },
+    {
+      name: 'Historial Médico',
+      href: '/historial-medico',
+      icon: Heart,
+      isPremium: true,
+      badge: user ? null : '🔒'
+    },
   ];
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Error haciendo logout:', error);
+    }
+  };
 
   const handleShareWhatsApp = () => {
     const message = `🚨 ¡Alerta de Alergias! 🚨
@@ -86,19 +104,41 @@ export function Header() {
               key={item.name}
               onClick={() => navigate(item.href)}
               className={`flex items-center space-x-2 text-sm font-medium transition-colors hover:text-primary rounded-md px-3 py-2 ${
-                isActive(item.href) 
-                  ? 'text-primary bg-primary/10 dark:bg-primary/20 border border-primary/30 dark:border-primary/40' 
+                item.isPremium && !user
+                  ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:hover:bg-orange-950 border border-orange-200 dark:border-orange-800'
+                  : isActive(item.href)
+                  ? 'text-primary bg-primary/10 dark:bg-primary/20 border border-primary/30 dark:border-primary/40'
                   : 'text-muted-foreground hover:text-primary hover:bg-muted/30 dark:hover:bg-muted/20'
               }`}
             >
               <item.icon className="h-4 w-4" />
               <span>{item.name}</span>
+              {item.badge && <span className="ml-1">{item.badge}</span>}
+              {item.isPremium && user && (
+                <span className="ml-1 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-1.5 py-0.5 rounded">PRO</span>
+              )}
             </button>
           ))}
         </nav>
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center space-x-2">
+          {user && (
+            <div className="flex items-center space-x-2 mr-2">
+              <div className="text-sm text-muted-foreground">
+                Hola, {user.displayName || user.email?.split('@')[0]}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className="text-xs"
+              >
+                Cerrar Sesión
+              </Button>
+            </div>
+          )}
+
           <Button
             variant="ghost"
             size="icon"
@@ -107,7 +147,7 @@ export function Header() {
           >
             <Share className="h-4 w-4" />
           </Button>
-          
+
           {isInstallableState && (
             <Button
               variant="ghost"
@@ -118,7 +158,7 @@ export function Header() {
               <Download className="h-4 w-4" />
             </Button>
           )}
-          
+
           <ModeToggle />
         </div>
 
@@ -147,13 +187,19 @@ export function Header() {
                     variant={isActive(item.href) ? 'default' : 'ghost'}
                     onClick={() => navigate(item.href)}
                     className={`justify-start ${
-                      isActive(item.href) 
-                        ? 'bg-primary dark:bg-primary/80 text-primary-foreground shadow-md dark:shadow-lg' 
+                      item.isPremium && !user
+                        ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:hover:bg-orange-950 border border-orange-200 dark:border-orange-800'
+                        : isActive(item.href)
+                        ? 'bg-primary dark:bg-primary/80 text-primary-foreground shadow-md dark:shadow-lg'
                         : 'hover:bg-muted/30 dark:hover:bg-muted/20'
                     }`}
                   >
                     <item.icon className="mr-2 h-4 w-4" />
                     {item.name}
+                    {item.badge && <span className="ml-1">{item.badge}</span>}
+                    {item.isPremium && user && (
+                      <span className="ml-auto text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-1.5 py-0.5 rounded">PRO</span>
+                    )}
                   </Button>
                 ))}
               </nav>

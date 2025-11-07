@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Usuarios solo pueden acceder a sus propios documentos
+    match /users/{userId} {
+      // Solo el usuario autenticado puede leer/escribir sus datos
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // Subcolecciones del usuario
+      match /{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // Colección pública de alergias (solo lectura para todos autenticados)
+    match /publicAllergies/{allergyId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Solo escritura desde admin
+    }
+
+    // Denegar todo lo demás
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

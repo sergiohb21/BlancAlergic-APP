@@ -3,6 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import process from 'process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -97,8 +98,7 @@ function optimizeImages() {
   console.log('   • Consider CDN delivery for global performance');
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  optimizeImages();
-}
+// Always run when executed directly
+optimizeImages();
 
 export { optimizeImages };

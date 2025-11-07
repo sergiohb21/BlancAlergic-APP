@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useApp } from '@/hooks/useApp';
 import { searchSelectors, searchActions as importedSearchActions } from '@/utils/searchSelectors';
 import type { SearchState } from '@/types/search';
-import { AlergiaType, AllergyCategory, AllergyIntensity } from '@/const/alergias';
+import { AllergyCategory, AllergyIntensity } from '@/const/alergias';
 
 // Optimized custom hooks for search state management
 export const useSearchState = () => {
@@ -136,33 +136,3 @@ export const useNameSearch = () => {
   };
 };
 
-// Legacy hook for backward compatibility with existing components
-export const useAllergies = () => {
-  const { state, dispatch } = useApp();
-  const searchResults = useSearchResults();
-
-  // For backward compatibility, maintain the old interface
-  return {
-    allergies: state.allergies,
-    filteredAllergies: searchResults.results.length > 0 ? searchResults.results :
-      state.allergies.filter(a => a.isAlergic),
-    searchQuery: state.search.query,
-    setSearchQuery: (query: string) => {
-      dispatch(importedSearchActions.setQuery(query));
-    },
-    filterAllergies: () => {
-      // This would trigger the search with current filters
-      dispatch(importedSearchActions.executeSearch(true));
-    },
-    sortBy: state.sort.field,
-    sortOrder: state.sort.order,
-    setSortBy: (field: keyof AlergiaType) => {
-      // Dispatch sort action
-      dispatch({ type: 'SORT_SET_FIELD', payload: field });
-    },
-    setSortOrder: (order: 'asc' | 'desc') => {
-      // Dispatch sort order action
-      dispatch({ type: 'SORT_SET_ORDER', payload: order });
-    },
-  };
-};
