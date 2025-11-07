@@ -5,7 +5,14 @@ import InputSearch from "./components/InputSearch.tsx";
 import TableView from "./TableView.tsx";
 import EmergencyView from "./EmergencyView.tsx";
 import Layout from "./Layout.tsx";
-import MedicalDashboardFirebase from "./components/medical/MedicalDashboardFirebase.tsx";
+import IntegratedMedicalMenu from "./components/medical/IntegratedMedicalMenu.tsx";
+import { SimpleProfileEdit } from "./components/medical/SimpleProfileEdit.tsx";
+import { AllergyManager } from "./components/medical/AllergyManager.tsx";
+import { MedicationManager } from "./components/medical/MedicationManager.tsx";
+import { VaccinationManager } from "./components/medical/VaccinationManager.tsx";
+import { LabResultsManager } from "./components/medical/LabResultsManager.tsx";
+import { MedicalRecordsManager } from "./components/medical/MedicalRecordsManager.tsx";
+import { DocumentManager } from "./components/medical/DocumentManager.tsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.tsx";
 import "./index.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -29,10 +36,52 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                   <Route path="tablaAlergias" element={<TableView />} />
                 </Route>
 
-                {/* Rutas premium - protegidas, sin Layout */}
+                {/* Rutas médicas - protegidas, con Layout Médico */}
                 <Route path="/historial-medico" element={
                   <ProtectedRoute>
-                    <MedicalDashboardFirebase />
+                    <IntegratedMedicalMenu />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/perfil-medico" element={
+                  <ProtectedRoute>
+                    <SimpleProfileEdit />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/mis-alergias" element={
+                  <ProtectedRoute>
+                    <AllergyManager />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/medicamentos" element={
+                  <ProtectedRoute>
+                    <MedicationManager />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/visitas-medicas" element={
+                  <ProtectedRoute>
+                    <MedicalRecordsManager />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/vacunas" element={
+                  <ProtectedRoute>
+                    <VaccinationManager />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/resultados-laboratorio" element={
+                  <ProtectedRoute>
+                    <LabResultsManager />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/informes-medicos" element={
+                  <ProtectedRoute>
+                    <DocumentManager />
                   </ProtectedRoute>
                 } />
               </Routes>

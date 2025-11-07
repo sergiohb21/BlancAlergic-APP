@@ -1,0 +1,619 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  User,
+  Shield,
+  Activity,
+  FileText,
+  Calendar,
+  AlertTriangle,
+  Heart,
+  Download,
+  Phone,
+  LogOut,
+  ChevronRight,
+  Syringe,
+  Stethoscope,
+  TestTube,
+  FileImage,
+  Menu,
+  X,
+  Home,
+  Search,
+  Table
+} from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { arrayAlergias } from '@/const/alergias';
+import {
+  getMedicalProfileData,
+  getAllergies,
+  getMedications,
+  getMedicalVisits,
+  getVaccinations,
+  getLabResults
+} from '@/firebase/firestore';
+import { MedicalProfile, AllergyRecord, VaccinationRecord, LabResultRecord } from '@/firebase/types';
+
+// Tipos para datos médicos
+interface MedicationRecord {
+  id: string;
+  name: string;
+  dosage: string;
+  frequency: string;
+  active: boolean;
+  startDate: string;
+  endDate?: string;
+  doctor?: string;
+  notes?: string;
+}
+
+interface MedicalVisitRecord {
+  id: string;
+  date: string;
+  doctor: string;
+  reason: string;
+  type: string;
+  notes?: string;
+  diagnosis?: string;
+  treatment?: string;
+}
+
+interface IntegratedMedicalMenuProps {
+  className?: string;
+}
+
+const IntegratedMedicalMenu: React.FC<IntegratedMedicalMenuProps> = ({ className }) => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [medicalData, setMedicalData] = useState<{
+    profile: MedicalProfile | null;
+    allergies: AllergyRecord[];
+    medications: MedicationRecord[];
+    visits: MedicalVisitRecord[];
+    vaccinations: VaccinationRecord[];
+    labResults: LabResultRecord[];
+  }>({
+    profile: null,
+    allergies: [],
+    medications: [],
+    visits: [],
+    vaccinations: [],
+    labResults: []
+  });
+  const [loading, setLoading] = useState(true);
+
+  // Cargar datos médicos al montar el componente
+  useEffect(() => {
+    if (user) {
+      loadMedicalData();
+    }
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const loadMedicalData = async () => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      const [profile, allergies, medications, visits, vaccinations, labResults] = await Promise.all([
+        getMedicalProfileData(user.uid),
+        getAllergies(user.uid),
+        getMedications(user.uid),
+        getMedicalVisits(user.uid),
+        getVaccinations(user.uid),
+        getLabResults(user.uid)
+      ]);
+
+      setMedicalData({
+        profile,
+        allergies,
+        medications,
+        visits,
+        vaccinations,
+        labResults
+      });
+    } catch (error) {
+      console.error('Error cargando datos médicos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para migrar alergias públicas al perfil privado
+  const migratePublicAllergies = async () => {
+    if (!user || !medicalData.profile) return;
+
+    try {
+      // Obtener las alergias públicas que marcan isAlergic: true
+      const publicAllergies = arrayAlergias.filter(alergia => alergia.isAlergic);
+
+      // Migrar solo si no hay alergias privadas aún
+      if (medicalData.allergies.length === 0) {
+        // Importamos dinámicamente para evitar problemas de importación circular
+        const { addAllergy } = await import('@/firebase/firestore');
+
+        for (const publicAllergy of publicAllergies) {
+          await addAllergy(user.uid, {
+            name: publicAllergy.name,
+            intensity: publicAllergy.intensity,
+            category: publicAllergy.category,
+            KUA_Litro: publicAllergy.KUA_Litro,
+            isAlergic: true,
+            symptoms: [],
+            reactions: ['Reacción alérgica estándar'],
+            notes: `Alergia migrada desde perfil público - KUA/Litro: ${publicAllergy.KUA_Litro}`,
+            diagnosedDate: new Date().toISOString().split('T')[0]
+          });
+        }
+
+        // Recargar datos después de migrar
+        await loadMedicalData();
+        alert('Se han migrado tus alergias públicas a tu perfil médico privado.');
+      } else {
+        alert('Ya tienes alergias registradas en tu perfil médico.');
+      }
+    } catch (error) {
+      console.error('Error migrando alergias:', error);
+      alert('Error al migrar alergias. Por favor, intenta de nuevo.');
+    }
+  };
+
+  // Navegación a secciones públicas
+  const publicSections = [
+    {
+      id: 'buscar',
+      title: 'Buscar Alergias',
+      description: 'Busca información detallada sobre alergias específicas',
+      icon: Search,
+      path: '/buscarAlergias',
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50'
+    },
+    {
+      id: 'emergencias',
+      title: 'Protocolo de Emergencia',
+      description: 'Pasos a seguir en caso de reacción alérgica',
+      icon: AlertTriangle,
+      path: '/emergencias',
+      color: 'text-red-600',
+      bgColor: 'bg-red-50'
+    },
+    {
+      id: 'tabla',
+      title: 'Tabla de Alergias',
+      description: 'Vista completa de todas las alergias y sus niveles',
+      icon: Table,
+      path: '/tablaAlergias',
+      color: 'text-green-600',
+      bgColor: 'bg-green-50'
+    }
+  ];
+
+  // Secciones médicas privadas
+  const privateSections = [
+    {
+      id: 'perfil',
+      title: 'Mi Perfil Médico',
+      description: 'Información personal y datos de contacto',
+      icon: User,
+      path: '/perfil-medico',
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50'
+    },
+    {
+      id: 'alergias',
+      title: 'Mis Alergias',
+      description: 'Gestiona tus alergias y reacciones',
+      icon: Shield,
+      path: '/mis-alergias',
+      color: 'text-red-600',
+      bgColor: 'bg-red-50'
+    },
+    {
+      id: 'medicamentos',
+      title: 'Medicamentos',
+      description: 'Control de medicamentos actuales',
+      icon: FileText,
+      path: '/medicamentos',
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50'
+    },
+    {
+      id: 'visitas',
+      title: 'Historial de Visitas',
+      description: 'Registro de consultas médicas',
+      icon: Calendar,
+      path: '/visitas-medicas',
+      color: 'text-green-600',
+      bgColor: 'bg-green-50'
+    },
+    {
+      id: 'vacunas',
+      title: 'Vacunación',
+      description: 'Historial de vacunas recibidas',
+      icon: Syringe,
+      path: '/vacunas',
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50'
+    },
+    {
+      id: 'laboratorio',
+      title: 'Resultados de Laboratorio',
+      description: 'Análisis y pruebas médicas',
+      icon: TestTube,
+      path: '/resultados-laboratorio',
+      color: 'text-indigo-600',
+      bgColor: 'bg-indigo-50'
+    },
+    {
+      id: 'informes',
+      title: 'Informes Médicos',
+      description: 'Sube y gestiona informes y documentos',
+      icon: FileImage,
+      path: '/informes-medicos',
+      color: 'text-gray-600',
+      bgColor: 'bg-gray-50'
+    }
+  ];
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    setIsMenuOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
+
+  // Calcular estadísticas
+  const stats = {
+    totalAllergies: medicalData.allergies.length,
+    activeMedications: medicalData.medications.filter(m => m.active).length,
+    recentVisits: medicalData.visits.filter(v => {
+      const visitDate = new Date(v.date);
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      return visitDate >= thirtyDaysAgo;
+    }).length,
+    upcomingVaccines: medicalData.vaccinations.filter(v => {
+      if (!v.nextDoseDate) return false;
+      return new Date(v.nextDoseDate) >= new Date();
+    }).length
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Heart className="h-12 w-12 text-primary mx-auto mb-4 animate-pulse" />
+          <p className="text-muted-foreground">Cargando tu perfil médico...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`container mx-auto px-4 py-8 space-y-6 ${className}`}>
+      {/* Header con información del usuario */}
+      <Card className="border-2 border-primary/20">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <User className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-xl">
+                  {medicalData.profile?.displayName || user?.displayName || 'Usuario'}
+                </CardTitle>
+                <CardDescription>
+                  {user?.email} • Perfil Médico Integrado
+                </CardDescription>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="md:hidden"
+              >
+                {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Cerrar Sesión
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Alerta de migración de alergias si no hay datos */}
+      {medicalData.profile && medicalData.allergies.length === 0 && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <AlertTriangle className="h-5 w-5 text-blue-600" />
+                <span className="text-blue-800">
+                  Parece que no tienes alergias registradas. ¿Quieres migrar tus alergias públicas a tu perfil médico privado?
+                </span>
+              </div>
+              <Button size="sm" variant="outline" onClick={migratePublicAllergies} className="ml-4">
+                <Download className="h-4 w-4 mr-2" />
+                Migrar Alergias
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Panel de navegación integrada */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="dashboard" className="flex items-center gap-2">
+            <Heart className="h-4 w-4" />
+            Dashboard Médico
+          </TabsTrigger>
+          <TabsTrigger value="navigation" className="flex items-center gap-2">
+            <Menu className="h-4 w-4" />
+            Navegación
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="dashboard" className="space-y-6">
+          {/* Estadísticas rápidas */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="bg-red-50 border-red-200">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <Shield className="h-8 w-8 text-red-600" />
+                  <div>
+                    <div className="text-2xl font-bold text-red-600">{stats.totalAllergies}</div>
+                    <div className="text-sm text-red-700">Alergias Activas</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-blue-50 border-blue-200">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <FileText className="h-8 w-8 text-blue-600" />
+                  <div>
+                    <div className="text-2xl font-bold text-blue-600">{stats.activeMedications}</div>
+                    <div className="text-sm text-blue-700">Medicamentos</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-green-50 border-green-200">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <Calendar className="h-8 w-8 text-green-600" />
+                  <div>
+                    <div className="text-2xl font-bold text-green-600">{stats.recentVisits}</div>
+                    <div className="text-sm text-green-700">Visitas Recientes</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-orange-50 border-orange-200">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <Syringe className="h-8 w-8 text-orange-600" />
+                  <div>
+                    <div className="text-2xl font-bold text-orange-600">{stats.upcomingVaccines}</div>
+                    <div className="text-sm text-orange-700">Vacunas Pendientes</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Alergias críticas */}
+          {medicalData.allergies.filter(a => a.intensity === 'Alta').length > 0 && (
+            <Card className="border-red-200 bg-red-50/50">
+              <CardHeader>
+                <CardTitle className="text-red-700 flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5" />
+                  Alergias Críticas
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {medicalData.allergies
+                    .filter(allergy => allergy.intensity === 'Alta')
+                    .map((allergy) => (
+                      <div key={allergy.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-red-200">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                          <span className="font-medium">{allergy.name}</span>
+                          <Badge variant="destructive" className="text-xs">
+                            {allergy.intensity}
+                          </Badge>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleNavigate('/mis-alergias')}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Actividad reciente */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5" />
+                Actividad Médica Reciente
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {medicalData.visits.slice(0, 3).map((visit) => (
+                  <div key={visit.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Stethoscope className="h-5 w-5 text-blue-600" />
+                      <div>
+                        <div className="font-medium">{visit.reason}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {new Date(visit.date).toLocaleDateString('es-ES')} • {visit.doctor}
+                        </div>
+                      </div>
+                    </div>
+                    <Badge variant="secondary">{visit.type}</Badge>
+                  </div>
+                ))}
+                {medicalData.visits.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No hay visitas médicas registradas
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="navigation" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Secciones Públicas */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-blue-600">
+                  <Home className="h-5 w-5" />
+                  Funciones Públicas
+                </CardTitle>
+                <CardDescription>
+                  Acceso a la información general de alergias
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {publicSections.map((section) => (
+                  <div
+                    key={section.id}
+                    className={`flex items-center justify-between p-4 rounded-lg border cursor-pointer transition-all ${section.bgColor} hover:shadow-md`}
+                    onClick={() => handleNavigate(section.path)}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className={`p-2 rounded-lg ${section.bgColor}`}>
+                        <section.icon className={`h-5 w-5 ${section.color}`} />
+                      </div>
+                      <div>
+                        <div className="font-medium">{section.title}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {section.description}
+                        </div>
+                      </div>
+                    </div>
+                    <ChevronRight className={`h-5 w-5 ${section.color}`} />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Secciones Privadas */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-purple-600">
+                  <User className="h-5 w-5" />
+                  Mi Perfil Médico Privado
+                </CardTitle>
+                <CardDescription>
+                  Gestión de tu historial médico personal
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {privateSections.map((section) => {
+                  const count = section.id === 'alergias' ? stats.totalAllergies :
+                               section.id === 'medicamentos' ? stats.activeMedications :
+                               section.id === 'visitas' ? stats.recentVisits :
+                               section.id === 'vacunas' ? stats.upcomingVaccines : 0;
+
+                  return (
+                    <div
+                      key={section.id}
+                      className={`flex items-center justify-between p-4 rounded-lg border cursor-pointer transition-all ${section.bgColor} hover:shadow-md`}
+                      onClick={() => handleNavigate(section.path)}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className={`p-2 rounded-lg ${section.bgColor}`}>
+                          <section.icon className={`h-5 w-5 ${section.color}`} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-medium">{section.title}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {section.description}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {count > 0 && (
+                          <Badge variant="secondary" className="text-xs">
+                            {count}
+                          </Badge>
+                        )}
+                        <ChevronRight className={`h-5 w-5 ${section.color}`} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      {/* Información de emergencia siempre visible */}
+      <Card className="border-red-200 bg-red-50/50">
+        <CardHeader>
+          <CardTitle className="text-red-700 flex items-center gap-2">
+            <Phone className="h-5 w-5" />
+            Información de Emergencia
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <div className="font-medium text-red-700 mb-2">Contacto de Emergencia:</div>
+              <div className="text-sm space-y-1">
+                <div>📞 {medicalData.profile?.emergencyContact?.name || 'No configurado'}</div>
+                <div>📱 {medicalData.profile?.emergencyContact?.phone || 'No configurado'}</div>
+                <div>🏥 {medicalData.profile?.bloodType || 'Tipo de sangre no registrado'}</div>
+              </div>
+            </div>
+            <div>
+              <div className="font-medium text-red-700 mb-2">Acciones en Emergencia:</div>
+              <div className="text-sm space-y-1">
+                <div>1. Administrar EpiPen si disponible</div>
+                <div>2. Llamar emergencias (112)</div>
+                <div>3. Contactar al alergólogo</div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default IntegratedMedicalMenu;

@@ -3,6 +3,7 @@ import {
   collection,
   addDoc,
   updateDoc,
+  deleteDoc,
   getDoc,
   getDocs,
   query,
@@ -21,12 +22,201 @@ import {
   VaccinationRecord,
   LabResultRecord,
   MedicalDataExport,
-  SyncStatus
+  SyncStatus,
+  MedicalRecord,
+  UserProfile
 } from './types';
 
 /**
  * Perfil Médico
  */
+
+// User profile management functions
+export const getUserProfile = async (userId: string): Promise<UserProfile | null> => {
+  try {
+    const userRef = doc(db, 'users', userId);
+    const userSnap = await getDoc(userRef);
+
+    if (userSnap.exists()) {
+      const data = userSnap.data();
+      return {
+        id: userSnap.id,
+        displayName: data.displayName || '',
+        email: data.email || '',
+        phone: data.phone,
+        birthDate: data.birthDate,
+        emergencyContact: data.emergencyContact?.name || data.emergencyContact,
+        emergencyPhone: data.emergencyContact?.phone || data.emergencyPhone,
+        bloodType: data.bloodType,
+        medicalNotes: data.medicalNotes,
+        photoURL: data.photoURL,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error obteniendo perfil de usuario:', error);
+    throw new Error('No se pudo cargar el perfil de usuario');
+  }
+};
+
+export const updateUserProfile = async (
+  userId: string,
+  profileData: Partial<UserProfile>
+): Promise<void> => {
+  try {
+    const userRef = doc(db, 'users', userId);
+    await updateDoc(userRef, {
+      ...profileData,
+      updatedAt: new Date().toISOString(),
+      lastSyncAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error actualizando perfil de usuario:', error);
+    throw new Error('No se pudo actualizar el perfil de usuario');
+  }
+};
+
+// Enhanced allergy functions
+export const addUserAllergy = async (
+  userId: string,
+  allergyData: Omit<AllergyRecord, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<AllergyRecord> => {
+  try {
+    const allergiesCollection = collection(db, 'users', userId, 'allergies');
+    const newAllergy = {
+      ...allergyData,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    const docRef = await addDoc(allergiesCollection, newAllergy);
+    return {
+      id: docRef.id,
+      ...newAllergy
+    };
+  } catch (error) {
+    console.error('Error añadiendo alergia de usuario:', error);
+    throw new Error('No se pudo añadir la alergia');
+  }
+};
+
+export const updateUserAllergy = async (
+  userId: string,
+  allergyId: string,
+  allergyData: Partial<AllergyRecord>
+): Promise<void> => {
+  try {
+    const allergyRef = doc(db, 'users', userId, 'allergies', allergyId);
+    await updateDoc(allergyRef, {
+      ...allergyData,
+      updatedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error actualizando alergia de usuario:', error);
+    throw new Error('No se pudo actualizar la alergia');
+  }
+};
+
+export const deleteUserAllergy = async (userId: string, allergyId: string): Promise<void> => {
+  try {
+    const allergyRef = doc(db, 'users', userId, 'allergies', allergyId);
+    await deleteDoc(allergyRef);
+  } catch (error) {
+    console.error('Error eliminando alergia de usuario:', error);
+    throw new Error('No se pudo eliminar la alergia');
+  }
+};
+
+export const getUserAllergies = async (userId: string): Promise<AllergyRecord[]> => {
+  try {
+    const allergiesCollection = collection(db, 'users', userId, 'allergies');
+    const q = query(allergiesCollection, orderBy('name'));
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as AllergyRecord[];
+  } catch (error) {
+    console.error('Error obteniendo alergias de usuario:', error);
+    throw new Error('No se pudieron cargar las alergias');
+  }
+};
+
+// Medical records functions
+export const getMedicalHistory = async (userId: string): Promise<{ records: MedicalRecord[], allergies: AllergyRecord[] }> => {
+  try {
+    // Get medical records collection
+    const recordsCollection = collection(db, 'users', userId, 'medicalRecords');
+    const recordsQuery = query(recordsCollection, orderBy('date', 'desc'));
+    const recordsSnapshot = await getDocs(recordsQuery);
+
+    const records = recordsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as MedicalRecord[];
+
+    // Get allergies
+    const allergies = await getUserAllergies(userId);
+
+    return { records, allergies };
+  } catch (error) {
+    console.error('Error obteniendo historial médico:', error);
+    throw new Error('No se pudo cargar el historial médico');
+  }
+};
+
+export const addMedicalRecord = async (
+  userId: string,
+  recordData: Omit<MedicalRecord, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<MedicalRecord> => {
+  try {
+    const recordsCollection = collection(db, 'users', userId, 'medicalRecords');
+    const newRecord = {
+      ...recordData,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    const docRef = await addDoc(recordsCollection, newRecord);
+    return {
+      id: docRef.id,
+      ...newRecord
+    };
+  } catch (error) {
+    console.error('Error añadiendo registro médico:', error);
+    throw new Error('No se pudo añadir el registro médico');
+  }
+};
+
+export const updateMedicalRecord = async (
+  userId: string,
+  recordId: string,
+  recordData: Partial<MedicalRecord>
+): Promise<void> => {
+  try {
+    const recordRef = doc(db, 'users', userId, 'medicalRecords', recordId);
+    await updateDoc(recordRef, {
+      ...recordData,
+      updatedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error actualizando registro médico:', error);
+    throw new Error('No se pudo actualizar el registro médico');
+  }
+};
+
+export const deleteMedicalRecord = async (userId: string, recordId: string): Promise<void> => {
+  try {
+    const recordRef = doc(db, 'users', userId, 'medicalRecords', recordId);
+    await deleteDoc(recordRef);
+  } catch (error) {
+    console.error('Error eliminando registro médico:', error);
+    throw new Error('No se pudo eliminar el registro médico');
+  }
+};
 
 export const updateMedicalProfile = async (
   userId: string,

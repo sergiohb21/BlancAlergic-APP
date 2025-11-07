@@ -10,6 +10,7 @@ import {
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from './config';
 import { FirebaseUser, MedicalProfile, SyncStatus } from './types';
+import { arrayAlergias } from '@/const/alergias';
 
 // Provider para Google Authentication
 const googleProvider = new GoogleAuthProvider();
@@ -89,6 +90,9 @@ export const createOrUpdateMedicalProfile = async (user: AuthUser): Promise<void
       ...initialProfile,
       id: user.uid
     });
+
+    // Migrar automáticamente las alergias públicas al perfil privado
+    await migratePublicAllergiesToProfile(user.uid);
   } else {
     // Actualizar último acceso
     await setDoc(userRef, {
@@ -96,6 +100,43 @@ export const createOrUpdateMedicalProfile = async (user: AuthUser): Promise<void
       lastAccessAt: now,
       lastSyncAt: now
     }, { merge: true });
+  }
+};
+
+/**
+ * Migrar alergias públicas al perfil médico privado
+ */
+const migratePublicAllergiesToProfile = async (userId: string): Promise<void> => {
+  try {
+    // Obtener las alergias públicas que marcan isAlergic: true
+    const publicAllergies = arrayAlergias.filter(alergia => alergia.isAlergic);
+
+    // Crear registros de alergias en la subcolección
+    for (const publicAllergy of publicAllergies) {
+      const allergyRef = doc(db, 'users', userId, 'allergies', `migrated_${Date.now()}_${publicAllergy.name.replace(/\s+/g, '_').toLowerCase()}`);
+
+      const allergyRecord = {
+        name: publicAllergy.name,
+        intensity: publicAllergy.intensity,
+        category: publicAllergy.category,
+        kuaLitro: publicAllergy.KUA_Litro || 0,
+        reactionType: 'Inmediata',
+        symptoms: [],
+        notes: `Alergia migrada automáticamente desde perfil público - KUA/Litro: ${publicAllergy.KUA_Litro || 'No registrado'}`,
+        diagnosedDate: new Date().toISOString().split('T')[0],
+        lastReactionDate: null,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      await setDoc(allergyRef, allergyRecord);
+    }
+
+    console.log(`Se han migrado ${publicAllergies.length} alergias públicas al perfil del usuario ${userId}`);
+  } catch (error) {
+    console.error('Error migrando alergias públicas:', error);
+    // No lanzamos el error para no interrumpir el proceso de login
   }
 };
 

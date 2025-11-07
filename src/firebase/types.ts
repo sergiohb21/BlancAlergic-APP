@@ -47,6 +47,38 @@ export interface AllergyRecord {
   notes: string;
   diagnosedDate: string;
   lastUpdated: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface MedicalRecord {
+  id: string;
+  type: 'visit' | 'test' | 'vaccination' | 'medication' | 'document' | 'other';
+  title: string;
+  description: string;
+  date: string;
+  doctor?: string;
+  location?: string;
+  result?: string;
+  nextAction?: string;
+  attachments?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserProfile {
+  id?: string;
+  displayName: string;
+  email: string;
+  phone?: string;
+  birthDate?: string;
+  emergencyContact?: string;
+  emergencyPhone?: string;
+  bloodType?: string;
+  medicalNotes?: string;
+  photoURL?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface MedicationRecord {
