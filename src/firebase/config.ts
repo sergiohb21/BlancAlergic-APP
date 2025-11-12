@@ -5,7 +5,7 @@ import { getStorage } from 'firebase/storage';
 
 // Configuración Firebase - PROYECTO: blancalergic-app
 // NOTA: Estas credenciales son públicas y seguras para uso en cliente
-// En producción, GitHub Actions inyecta las variables con prefijo VITE_
+// GitHub Actions inyecta las variables con prefijo VITE_ durante el build
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,

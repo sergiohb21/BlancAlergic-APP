@@ -31,7 +31,7 @@ googleProvider.setCustomParameters({
 export const signInWithGoogle = async (): Promise<UserCredential> => {
   try {
     // Validar que la configuración de Firebase sea correcta antes de intentar auth
-    const config = (auth as any).app?.options;
+    const config = (auth as { app?: { options?: { apiKey?: string } } }).app?.options;
     if (!config?.apiKey) {
       throw new Error('La configuración de Firebase no es válida. Faltan credenciales.');
     }
