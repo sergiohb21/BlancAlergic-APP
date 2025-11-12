@@ -30,6 +30,12 @@ googleProvider.setCustomParameters({
  */
 export const signInWithGoogle = async (): Promise<UserCredential> => {
   try {
+    // Validar que la configuración de Firebase sea correcta antes de intentar auth
+    const config = (auth as any).app?.options;
+    if (!config?.apiKey) {
+      throw new Error('La configuración de Firebase no es válida. Faltan credenciales.');
+    }
+
     // Intentar primero con popup (mejor UX)
     const result = await signInWithPopup(auth, googleProvider);
 
@@ -39,6 +45,12 @@ export const signInWithGoogle = async (): Promise<UserCredential> => {
     return result;
   } catch (error: unknown) {
     const firebaseError = error as { code?: string; message?: string };
+
+    // Manejo específico para errores de configuración
+    if (firebaseError.code === 'auth/invalid-api-key') {
+      logger.error({ error: firebaseError }, 'Error de API key inválida - Configuración incorrecta');
+      throw new Error('Error de configuración de Firebase. Contacte al administrador.');
+    }
 
     // Si es error de popup cerrado o COOP, usar redirect
     if (firebaseError.code === 'auth/popup-closed-by-user' ||

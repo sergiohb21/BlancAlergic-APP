@@ -36,23 +36,13 @@ export default defineConfig({
         lang: "es",
         dir: "ltr"
       },
-      registerType: "autoUpdate",
-      // En desarrollo usar generateSW, en producción injectManifest
-      strategies: process.env.NODE_ENV === 'production' ? 'injectManifest' : 'generateSW',
+      registerType: 'autoUpdate',
+      strategies: 'generateSW',
       filename: 'sw.js',
-      // Solo usar inyectManifest en producción
-      ...(process.env.NODE_ENV === 'production' && {
-        injectManifest: {
-          injectionPoint: 'self.__WB_MANIFEST'
-        }
-      }),
       devOptions: {
-        enabled: false,
+        enabled: true,
         type: 'module'
       },
-    // Desactivar PWA completamente en desarrollo para evitar errores
-    disable: process.env.NODE_ENV === 'development',
-      // Configuración para desarrollo
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [
@@ -63,7 +53,7 @@ export default defineConfig({
               cacheName: 'google-fonts-cache',
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 año
+                maxAgeSeconds: 60 * 60 * 24 * 365
               }
             }
           },
@@ -74,7 +64,41 @@ export default defineConfig({
               cacheName: 'google-fonts-static-cache',
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 año
+                maxAgeSeconds: 60 * 60 * 24 * 365
+              }
+            }
+          },
+          // IMPORTANTE: No cachear llamadas a Firebase para evitar problemas de auth
+          {
+            urlPattern: /^https:\/\/.*\.firebaseio\.com/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'firebase-realtime-cache',
+              networkTimeoutSeconds: 3,
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/firestore\.googleapis\.com/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'firebase-firestore-cache',
+              networkTimeoutSeconds: 3,
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/identitytoolkit\.googleapis\.com/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'firebase-auth-cache',
+              networkTimeoutSeconds: 3,
+              cacheableResponse: {
+                statuses: [0, 200]
               }
             }
           }

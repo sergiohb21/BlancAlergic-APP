@@ -20,6 +20,19 @@ jobs:
       - name: Install dependencies
         uses: bahmutov/npm-install@v1
 
+      - name: Verify environment variables
+        run: |
+          echo "🔥 Verificando variables de entorno..."
+          echo "VITE_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY != '' }}"
+          echo "VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN != '' }}"
+          echo "VITE_FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID != '' }}"
+          echo "VITE_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID != '' }}"
+          if [[ -z "${{ secrets.FIREBASE_API_KEY }}" || -z "${{ secrets.FIREBASE_AUTH_DOMAIN }}" || -z "${{ secrets.FIREBASE_PROJECT_ID }}" || -z "${{ secrets.FIREBASE_APP_ID }}" ]]; then
+            echo "❌ Faltan variables de entorno requeridas"
+            exit 1
+          fi
+          echo "✅ Variables de entorno verificadas"
+
       - name: Build project
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
@@ -30,6 +43,16 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
         run: npm run build
+
+      - name: Verify Firebase configuration in build
+        run: |
+          echo "🔥 Verificando configuración de Firebase en el build..."
+          if grep -q "AIzaSyDrQqbURED37ggiDUQATsgiWdVK9LiMz4o" dist/assets/index-*.js; then
+            echo "✅ API key encontrada en el build"
+          else
+            echo "❌ API key no encontrada en el build"
+            exit 1
+          fi
 
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v4
