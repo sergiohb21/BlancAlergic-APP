@@ -39,24 +39,26 @@ export const signInWithGoogle = async (): Promise<UserCredential> => {
     return result;
   } catch (error: unknown) {
     const firebaseError = error as { code?: string; message?: string };
-    console.warn('Popup falló, intentando con redirect:', firebaseError.message);
 
     // Si es error de popup cerrado o COOP, usar redirect
     if (firebaseError.code === 'auth/popup-closed-by-user' ||
         firebaseError.code === 'auth/cancelled-popup-request' ||
         firebaseError.message?.includes('Cross-Origin-Opener-Policy')) {
+
+      logger.warn({ error: firebaseError, message: 'Popup failed, trying redirect' }, 'Authentication popup failed, attempting redirect');
+
       try {
         await signInWithRedirect(auth, googleProvider);
         // Esto redirigirá la página, así que no continuaremos aquí
         throw new Error('REDIRECT_INITIATED');
       } catch (redirectError: unknown) {
-        console.error('Error en redirect:', redirectError);
+        logger.error({ error: redirectError }, 'Authentication redirect failed');
         throw new Error('No se pudo iniciar sesión. Intenta recargar la página.');
       }
     }
 
     // Para otros errores, lanzar normalmente
-    console.error('Error en Google Sign-In:', error);
+    logger.error({ error, code: firebaseError?.code }, 'Google Sign-In error');
     const errorMessage = error instanceof Error ? error.message : 'Error al iniciar sesión con Google';
     throw new Error(errorMessage);
   }
@@ -75,7 +77,7 @@ export const handleRedirectResult = async (): Promise<UserCredential | null> => 
     }
     return null;
   } catch (error: unknown) {
-    console.error('Error manejando redirect result:', error);
+    logger.error({ error }, 'Error handling authentication redirect result');
     const errorMessage = error instanceof Error ? error.message : 'Error al procesar inicio de sesión';
     throw new Error(errorMessage);
   }
@@ -88,7 +90,7 @@ export const signOutUser = async (): Promise<void> => {
   try {
     await signOut(auth);
   } catch (error: unknown) {
-    console.error('Error al cerrar sesión:', error);
+    logger.error({ error }, 'Error handling authentication redirect result');
     const errorMessage = error instanceof Error ? error.message : 'Error al cerrar sesión';
     throw new Error(errorMessage);
   }
@@ -177,7 +179,7 @@ const migratePublicAllergiesToProfile = async (userId: string): Promise<void> =>
 
     logger.info(`Se han migrado ${publicAllergies.length} alergias públicas al perfil del usuario ${userId}`);
   } catch (error) {
-    console.error('Error migrando alergias públicas:', error);
+    logger.error({ error }, 'Sign out error');
     // No lanzamos el error para no interrumpir el proceso de login
   }
 };
@@ -195,7 +197,7 @@ export const getMedicalProfile = async (userId: string): Promise<MedicalProfile 
     }
     return null;
   } catch (error: unknown) {
-    console.error('Error al obtener perfil médico:', error);
+    logger.error({ error, userId }, 'Error migrating public allergies');
     throw new Error('Error al cargar el perfil médico');
   }
 };
@@ -221,14 +223,14 @@ export const getCurrentUser = (): AuthUser | null => {
  */
 export const refreshToken = async (): Promise<string | null> => {
   try {
-    const user = auth.currentUser;
-    if (user) {
-      const tokenResult = await user.getIdTokenResult(true);
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      const tokenResult = await currentUser.getIdTokenResult(true);
       return tokenResult.token;
     }
     return null;
-  } catch (error) {
-    console.error('Error refrescando token:', error);
+  } catch (error: unknown) {
+    logger.error({ error, userId: auth.currentUser?.uid }, 'Error refreshing auth token');
     return null;
   }
 };

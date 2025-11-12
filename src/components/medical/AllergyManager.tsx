@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useProfileManagement } from '../../hooks/useProfileManagement';
 import { useAuth } from '../../hooks/useAuth';
 import { AllergyRecord } from '../../firebase/types';
+import { logger } from '@/utils/logger';
 
 interface AllergyFormData {
   name: string;
@@ -93,7 +94,7 @@ export const AllergyManager: React.FC = () => {
       setIsAddingAllergy(false);
       resetForm();
     } catch (err) {
-      console.error('Error saving allergy:', err);
+      logger.error({ error: err, userId: user?.uid, operation: editingAllergy ? 'update' : 'create' }, 'Error saving allergy');
     }
   };
 
@@ -106,7 +107,7 @@ export const AllergyManager: React.FC = () => {
       try {
         await deleteAllergy(id);
       } catch (err) {
-        console.error('Error deleting allergy:', err);
+        logger.error({ error: err, userId: user?.uid, allergyId: id }, 'Error deleting allergy');
       }
     }
   };

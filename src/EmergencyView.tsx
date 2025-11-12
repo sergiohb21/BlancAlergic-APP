@@ -79,8 +79,8 @@ const EmergencyStep = React.memo(({
                     logger.debug(`Emergency medical image loaded: ${step.id}`);
                   }}
                   onError={(error) => {
-                    console.error(`❌ Failed to load emergency image: ${step.id}`, error);
-                    console.warn(`Critical emergency image failed: ${step.id}`);
+                    logger.error({ error, stepId: step.id }, `Failed to load emergency image: ${step.id}`);
+                    logger.warn({ stepId: step.id }, 'Critical emergency image failed');
                   }}
                 />
               </div>
@@ -289,9 +289,9 @@ Alergias: ${emergencyData.allergies || 'No especificadas'}`}
                   }
                 }}
                 onError={(error) => {
-                  console.error(`❌ Failed to load emergency image: ${step.id}`, error);
+                  logger.error({ error, stepId: step.id }, `Failed to load emergency image: ${step.id}`);
                   if (step.isEmergency) {
-                    console.warn(`Critical emergency image failed: ${step.id}`);
+                    logger.warn({ stepId: step.id }, 'Critical emergency image failed');
                   }
                 }}
               />

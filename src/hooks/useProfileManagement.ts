@@ -10,6 +10,7 @@ import {
   deleteUserAllergy
 } from '../firebase/firestore';
 import { UserProfile, AllergyRecord } from '../firebase/types';
+import { logger } from '@/utils/logger';
 
 interface UseProfileManagementReturn {
   profile: UserProfile | null;
@@ -55,7 +56,7 @@ export const useProfileManagement = (userId: string | undefined): UseProfileMana
       const errorMessage = err instanceof Error ? err.message : 'Error al cargar perfil';
       setError(errorMessage);
       setSyncStatus('error');
-      console.error('Error fetching profile:', err);
+      logger.error({ error: err, userId }, 'Error fetching medical profile');
     } finally {
       setLoading(false);
     }

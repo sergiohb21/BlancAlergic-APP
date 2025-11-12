@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import GoogleLogin from './GoogleLogin';
+import { logger } from '@/utils/logger';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -50,7 +51,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
               // La redirección se manejará automáticamente por el ProtectedRoute
             }}
             onError={(error) => {
-              console.error('Error de autenticación:', error);
+              logger.error({ error }, 'Authentication error in ProtectedRoute');
             }}
           />
 

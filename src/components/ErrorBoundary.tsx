@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, Phone, RefreshCw } from 'lucide-react';
 import { EMERGENCY_PHONE, EMERGENCY_PHONE_TEL } from '@/utils/constants';
+import { logger } from '@/utils/logger';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -45,19 +46,21 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
     // Enhanced logging for medical components
     if (mode === 'medical') {
-      console.error(`MedicalErrorBoundary (${componentName}):`, error, errorInfo);
+      logger.error({ error, errorInfo, componentName, mode: 'medical' }, `MedicalErrorBoundary triggered for component: ${componentName}`);
 
       // Critical medical component error - log with higher priority
       if (import.meta.env.PROD) {
-        console.error('CRITICAL MEDICAL COMPONENT ERROR:', {
+        logger.error({
           component: componentName,
           error: error.message,
           stack: error.stack,
+          errorInfo,
           timestamp: new Date().toISOString(),
-        });
+          severity: 'critical',
+        }, 'CRITICAL MEDICAL COMPONENT ERROR');
       }
     } else {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
+      logger.error({ error, errorInfo, componentName, mode }, 'ErrorBoundary caught an error');
     }
 
     this.setState({
@@ -72,13 +75,13 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
     // Log to external monitoring service in production
     if (import.meta.env.PROD) {
-      console.warn('Production error detected:', {
+      logger.warn({
         message: error.message,
         stack: error.stack,
         componentStack: errorInfo.componentStack,
         mode,
         componentName,
-      });
+      }, 'Production error detected');
     }
   }
 

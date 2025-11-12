@@ -1,6 +1,7 @@
 import { useApp } from './useApp';
 import { useSearchResults } from './useSearchState';
 import { AllergyCategory, AllergyIntensity } from '@/types/search';
+import { logger } from '@/utils/logger';
 
 type SortField = 'name' | 'category' | 'intensity' | 'KUA_Litro' | 'isAlergic';
 
@@ -33,7 +34,7 @@ export function useAllergies() {
     setSortOrder: (order: 'asc' | 'desc') => actions.sort.setOrder(order),
     filterAllergies: () => {
       // Trigger search with current filters
-      console.warn('filterAllergies using new search architecture');
+      logger.info('filterAllergies using new search architecture');
     },
   };
 }

@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { logger } from '@/utils/logger';
 import {
   User,
   Shield,
@@ -118,7 +119,7 @@ const IntegratedMedicalMenu: React.FC<IntegratedMedicalMenuProps> = ({ className
         labResults
       });
     } catch (error) {
-      console.error('Error cargando datos médicos:', error);
+      logger.error({ error, userId: user?.uid }, 'Error loading medical data in integrated menu');
     } finally {
       setLoading(false);
     }
@@ -158,7 +159,7 @@ const IntegratedMedicalMenu: React.FC<IntegratedMedicalMenuProps> = ({ className
         alert('Ya tienes alergias registradas en tu perfil médico.');
       }
     } catch (error) {
-      console.error('Error migrando alergias:', error);
+      logger.error({ error, userId: user?.uid }, 'Error migrating allergies in integrated menu');
       alert('Error al migrar alergias. Por favor, intenta de nuevo.');
     }
   };
@@ -271,7 +272,7 @@ const IntegratedMedicalMenu: React.FC<IntegratedMedicalMenuProps> = ({ className
       await logout();
       navigate('/');
     } catch (error) {
-      console.error('Error al cerrar sesión:', error);
+      logger.error({ error, userId: user?.uid }, 'Error during logout from integrated menu');
     }
   };
 

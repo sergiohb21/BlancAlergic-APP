@@ -95,6 +95,6 @@ export const preloadCriticalImages = async (imagePaths: string[]): Promise<void>
     await Promise.all(imagePaths.map(path => preloadEmergencyImage(path)));
     logger.debug('All critical emergency images preloaded');
   } catch (error) {
-    console.error('❌ Failed to preload emergency images:', error);
+    logger.error({ error, imagePaths }, 'Failed to preload emergency images');
   }
 };

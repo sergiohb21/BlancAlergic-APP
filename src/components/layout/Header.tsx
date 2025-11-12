@@ -71,7 +71,7 @@ export function Header() {
       await logout();
       navigate('/');
     } catch (error) {
-      console.error('Error haciendo logout:', error);
+      logger.error({ error, userId: user?.uid }, 'Error during logout from header');
     }
   };
 

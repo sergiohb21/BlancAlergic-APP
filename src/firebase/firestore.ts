@@ -13,6 +13,7 @@ import {
   arrayRemove,
   writeBatch
 } from 'firebase/firestore';
+import { logger } from '@/utils/logger';
 import { db } from './config';
 import {
   MedicalProfile,
@@ -56,7 +57,7 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
     }
     return null;
   } catch (error) {
-    console.error('Error obteniendo perfil de usuario:', error);
+    logger.error({ error, userId }, 'Error getting user profile');
     throw new Error('No se pudo cargar el perfil de usuario');
   }
 };
@@ -73,7 +74,7 @@ export const updateUserProfile = async (
       lastSyncAt: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Error actualizando perfil de usuario:', error);
+    logger.error({ error, userId }, 'Error updating user profile');
     throw new Error('No se pudo actualizar el perfil de usuario');
   }
 };
@@ -97,7 +98,7 @@ export const addUserAllergy = async (
       ...newAllergy
     };
   } catch (error) {
-    console.error('Error añadiendo alergia de usuario:', error);
+    logger.error({ error, userId }, 'Error adding user allergy');
     throw new Error('No se pudo añadir la alergia');
   }
 };
@@ -114,7 +115,7 @@ export const updateUserAllergy = async (
       updatedAt: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Error actualizando alergia de usuario:', error);
+    logger.error({ error, userId, allergyId }, 'Error updating user allergy');
     throw new Error('No se pudo actualizar la alergia');
   }
 };
@@ -124,7 +125,7 @@ export const deleteUserAllergy = async (userId: string, allergyId: string): Prom
     const allergyRef = doc(db, 'users', userId, 'allergies', allergyId);
     await deleteDoc(allergyRef);
   } catch (error) {
-    console.error('Error eliminando alergia de usuario:', error);
+    logger.error({ error, userId, allergyId }, 'Error deleting user allergy');
     throw new Error('No se pudo eliminar la alergia');
   }
 };
@@ -140,7 +141,7 @@ export const getUserAllergies = async (userId: string): Promise<AllergyRecord[]>
       ...doc.data()
     })) as AllergyRecord[];
   } catch (error) {
-    console.error('Error obteniendo alergias de usuario:', error);
+    logger.error({ error, userId }, 'Error getting user allergies');
     throw new Error('No se pudieron cargar las alergias');
   }
 };
@@ -163,7 +164,7 @@ export const getMedicalHistory = async (userId: string): Promise<{ records: Medi
 
     return { records, allergies };
   } catch (error) {
-    console.error('Error obteniendo historial médico:', error);
+    logger.error({ error, userId }, 'Error getting medical history');
     throw new Error('No se pudo cargar el historial médico');
   }
 };
@@ -186,7 +187,7 @@ export const addMedicalRecord = async (
       ...newRecord
     };
   } catch (error) {
-    console.error('Error añadiendo registro médico:', error);
+    logger.error({ error, userId }, 'Error adding medical record');
     throw new Error('No se pudo añadir el registro médico');
   }
 };
@@ -203,7 +204,7 @@ export const updateMedicalRecord = async (
       updatedAt: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Error actualizando registro médico:', error);
+    logger.error({ error, userId, recordId }, 'Error updating medical record');
     throw new Error('No se pudo actualizar el registro médico');
   }
 };
@@ -213,7 +214,7 @@ export const deleteMedicalRecord = async (userId: string, recordId: string): Pro
     const recordRef = doc(db, 'users', userId, 'medicalRecords', recordId);
     await deleteDoc(recordRef);
   } catch (error) {
-    console.error('Error eliminando registro médico:', error);
+    logger.error({ error, userId, recordId }, 'Error deleting medical record');
     throw new Error('No se pudo eliminar el registro médico');
   }
 };
@@ -230,7 +231,7 @@ export const updateMedicalProfile = async (
       lastSyncAt: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Error actualizando perfil médico:', error);
+    logger.error({ error, userId }, 'Error updating medical profile');
     throw new Error('No se pudo actualizar el perfil médico');
   }
 };
@@ -245,7 +246,7 @@ export const getMedicalProfileData = async (userId: string): Promise<MedicalProf
     }
     return null;
   } catch (error) {
-    console.error('Error obteniendo perfil médico:', error);
+    logger.error({ error, userId }, 'Error getting medical profile data');
     throw new Error('No se pudo cargar el perfil médico');
   }
 };
@@ -276,7 +277,7 @@ export const addAllergy = async (
 
     return docRef.id;
   } catch (error) {
-    console.error('Error añadiendo alergia:', error);
+    logger.error({ error, userId }, 'Error adding allergy');
     throw new Error('No se pudo añadir la alergia');
   }
 };
@@ -293,7 +294,7 @@ export const updateAllergy = async (
       lastUpdated: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Error actualizando alergia:', error);
+    logger.error({ error, userId, allergyId }, 'Error updating allergy');
     throw new Error('No se pudo actualizar la alergia');
   }
 };
@@ -315,7 +316,7 @@ export const deleteAllergy = async (userId: string, allergyId: string): Promise<
 
     await batch.commit();
   } catch (error) {
-    console.error('Error eliminando alergia:', error);
+    logger.error({ error, userId, allergyId }, 'Error deleting allergy');
     throw new Error('No se pudo eliminar la alergia');
   }
 };
@@ -331,7 +332,7 @@ export const getAllergies = async (userId: string): Promise<AllergyRecord[]> => 
       ...doc.data()
     })) as AllergyRecord[];
   } catch (error) {
-    console.error('Error obteniendo alergias:', error);
+    logger.error({ error, userId }, 'Error getting allergies');
     throw new Error('No se pudieron cargar las alergias');
   }
 };
@@ -357,7 +358,7 @@ export const addMedication = async (
 
     return docRef.id;
   } catch (error) {
-    console.error('Error añadiendo medicamento:', error);
+    logger.error({ error, userId }, 'Error adding medication');
     throw new Error('No se pudo añadir el medicamento');
   }
 };
@@ -377,7 +378,7 @@ export const getMedications = async (userId: string): Promise<MedicationRecord[]
     // Filtrar localmente por active=true
     return allMedications.filter(med => med.active === true);
   } catch (error) {
-    console.error('Error obteniendo medicamentos:', error);
+    logger.error({ error, userId }, 'Error getting medications');
     throw new Error('No se pudieron cargar los medicamentos');
   }
 };
@@ -396,7 +397,7 @@ export const addMedicalVisit = async (
 
     return docRef.id;
   } catch (error) {
-    console.error('Error añadiendo visita médica:', error);
+    logger.error({ error, userId }, 'Error adding medical visit');
     throw new Error('No se pudo añadir la visita médica');
   }
 };
@@ -420,7 +421,7 @@ export const getMedicalVisits = async (
       ...doc.data()
     })) as MedicalVisitRecord[];
   } catch (error) {
-    console.error('Error obteniendo visitas médicas:', error);
+    logger.error({ error, userId }, 'Error getting medical visits');
     throw new Error('No se pudieron cargar las visitas médicas');
   }
 };
@@ -439,7 +440,7 @@ export const addVaccination = async (
 
     return docRef.id;
   } catch (error) {
-    console.error('Error añadiendo vacuna:', error);
+    logger.error({ error, userId }, 'Error adding vaccination');
     throw new Error('No se pudo añadir la vacuna');
   }
 };
@@ -455,7 +456,7 @@ export const getVaccinations = async (userId: string): Promise<VaccinationRecord
       ...doc.data()
     })) as VaccinationRecord[];
   } catch (error) {
-    console.error('Error obteniendo vacunas:', error);
+    logger.error({ error, userId }, 'Error getting vaccinations');
     throw new Error('No se pudieron cargar las vacunas');
   }
 };
@@ -474,7 +475,7 @@ export const addLabResult = async (
 
     return docRef.id;
   } catch (error) {
-    console.error('Error añadiendo resultado de laboratorio:', error);
+    logger.error({ error, userId }, 'Error adding lab result');
     throw new Error('No se pudo añadir el resultado de laboratorio');
   }
 };
@@ -490,7 +491,7 @@ export const getLabResults = async (userId: string): Promise<LabResultRecord[]> 
       ...doc.data()
     })) as LabResultRecord[];
   } catch (error) {
-    console.error('Error obteniendo resultados de laboratorio:', error);
+    logger.error({ error, userId }, 'Error getting lab results');
     throw new Error('No se pudieron cargar los resultados de laboratorio');
   }
 };
@@ -528,7 +529,7 @@ export const exportMedicalData = async (userId: string): Promise<MedicalDataExpo
 
     return exportData;
   } catch (error) {
-    console.error('Error exportando datos médicos:', error);
+    logger.error({ error, userId }, 'Error exporting medical data');
     throw new Error('No se pudieron exportar los datos médicos');
   }
 };

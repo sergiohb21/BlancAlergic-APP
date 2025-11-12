@@ -6,6 +6,7 @@ import {
   deleteMedicalRecord
 } from '../firebase/firestore';
 import { MedicalRecord, AllergyRecord } from '../firebase/types';
+import { logger } from '@/utils/logger';
 
 interface UseMedicalDataReturn {
   records: MedicalRecord[];
@@ -48,7 +49,7 @@ export const useMedicalData = (userId: string | undefined): UseMedicalDataReturn
       const errorMessage = err instanceof Error ? err.message : 'Error al cargar datos médicos';
       setError(errorMessage);
       setSyncStatus('error');
-      console.error('Error fetching medical data:', err);
+      logger.error({ error: err, userId }, 'Error fetching medical data');
     } finally {
       setLoading(false);
     }

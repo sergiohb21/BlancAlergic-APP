@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage } from '../../firebase/config';
 import { useAuth } from '../../hooks/useAuth';
+import { logger } from '@/utils/logger';
 
 interface DocumentRecord {
   id: string;
@@ -104,7 +105,7 @@ export const DocumentManager: React.FC = () => {
       setDocuments(prev => [newDocument, ...prev]);
       setUploadProgress(100);
     } catch (error) {
-      console.error('Error uploading file:', error);
+      logger.error({ error, fileName: file.name, userId: user?.uid }, 'Error uploading medical document');
       alert('Error al subir el archivo. Por favor, inténtalo de nuevo.');
     } finally {
       setUploading(false);
@@ -129,7 +130,7 @@ export const DocumentManager: React.FC = () => {
       setDocuments(prev => prev.filter(doc => doc.id !== document.id));
       setSelectedDocument(null);
     } catch (error) {
-      console.error('Error deleting file:', error);
+      logger.error({ error, documentId: document.id, userId: user?.uid }, 'Error deleting medical document');
       alert('Error al eliminar el archivo. Por favor, inténtalo de nuevo.');
     }
   };

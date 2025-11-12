@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMedicalData } from '../../hooks/useMedicalData';
 import { useAuth } from '../../hooks/useAuth';
 import { MedicalRecord } from '../../firebase/types';
+import { logger } from '@/utils/logger';
 
 interface MedicalFormData {
   type: 'visit' | 'test' | 'vaccination' | 'medication' | 'document' | 'other';
@@ -117,7 +118,7 @@ export const MedicalRecordsManager: React.FC = () => {
       setIsAddingRecord(false);
       resetForm();
     } catch (err) {
-      console.error('Error saving record:', err);
+      logger.error({ error: err, userId: user?.uid, operation: editingRecord ? 'update' : 'create' }, 'Error saving medical record');
     }
   };
 
@@ -130,7 +131,7 @@ export const MedicalRecordsManager: React.FC = () => {
       try {
         await deleteRecord(id);
       } catch (err) {
-        console.error('Error deleting record:', err);
+        logger.error({ error: err, userId: user?.uid, recordId: id }, 'Error deleting medical record');
       }
     }
   };
