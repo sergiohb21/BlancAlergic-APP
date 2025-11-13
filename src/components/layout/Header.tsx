@@ -24,31 +24,73 @@ export function Header() {
   const [isInstallableState, setIsInstallable] = useState(false);
 
   useEffect(() => {
+    let cleanupTimer: NodeJS.Timeout | null = null;
+
     const handleBeforeInstallPrompt = (e: Event) => {
+      // Prevenir el banner automático del navegador
       e.preventDefault();
+      logger.info('beforeinstallprompt event fired - storing for custom prompt');
+
+      // Guardar el evento para mostrar el prompt personalizado más tarde
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setIsInstallable(true);
+
+      // Limpiar automáticamente después de 5 minutos si el usuario no interactúa
+      cleanupTimer = setTimeout(() => {
+        setDeferredPrompt(null);
+        setIsInstallable(false);
+        logger.info('PWA install prompt expired after 5 minutes');
+      }, 5 * 60 * 1000); // 5 minutos
+    };
+
+    const handleAppInstalled = () => {
+      logger.info('PWA was installed');
+      setDeferredPrompt(null);
+      setIsInstallable(false);
+      if (cleanupTimer) {
+        clearTimeout(cleanupTimer);
+        cleanupTimer = null;
+      }
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt as EventListener);
+    window.addEventListener('appinstalled', handleAppInstalled);
 
+    // Limpiar listeners al desmontar
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt as EventListener);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+      if (cleanupTimer) {
+        clearTimeout(cleanupTimer);
+      }
     };
   }, []);
 
-  const handleInstallClick = () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          logger.info('User accepted the A2HS prompt');
-        } else {
-          logger.info('User dismissed the A2HS prompt');
-        }
-        setDeferredPrompt(null);
-        setIsInstallable(false);
-      });
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) {
+      logger.warn('No deferred prompt available');
+      return;
+    }
+
+    try {
+      logger.info('Showing PWA install prompt');
+      // Mostrar el prompt de instalación
+      await deferredPrompt.prompt();
+
+      // Esperar la respuesta del usuario
+      const choiceResult = await deferredPrompt.userChoice;
+
+      if (choiceResult.outcome === 'accepted') {
+        logger.info('User accepted the A2HS prompt');
+      } else {
+        logger.info('User dismissed the A2HS prompt');
+      }
+    } catch (error) {
+      logger.error({ error }, 'Error showing PWA install prompt');
+    } finally {
+      // Limpiar el estado sin importar el resultado
+      setDeferredPrompt(null);
+      setIsInstallable(false);
     }
   };
 

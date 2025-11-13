@@ -3,10 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { logger } from '@/utils/logger';
 import {
-  ArrowLeft,
   User,
   Shield,
   FileText,
@@ -14,7 +13,6 @@ import {
   Heart,
   Download,
   Phone,
-  LogOut,
   ChevronRight,
   Menu,
   Home,
@@ -67,9 +65,16 @@ interface MedicalHistoryViewProps {
 }
 
 const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'history' | 'sections' | 'emergency'>('history');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Sincronizar el estado del tab con los parámetros URL para persistencia
+  const activeTab = (searchParams.get('tab') as 'history' | 'sections' | 'emergency') || 'history';
+
+  const setActiveTab = (tab: 'history' | 'sections' | 'emergency') => {
+    setSearchParams({ tab });
+  };
   const [medicalData, setMedicalData] = useState<{
     profile: MedicalProfile | null;
     allergies: AllergyRecord[];
@@ -170,8 +175,8 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
       description: 'Información personal y datos de contacto',
       icon: User,
       path: '/perfil-medico',
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
+      color: 'text-primary',
+      bgColor: 'bg-muted'
     },
     {
       id: 'alergias',
@@ -179,8 +184,8 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
       description: 'Gestiona tus alergias y reacciones',
       icon: Shield,
       path: '/mis-alergias',
-      color: 'text-red-600',
-      bgColor: 'bg-red-50'
+      color: 'text-destructive',
+      bgColor: 'bg-destructive/10'
     },
     {
       id: 'medicamentos',
@@ -188,8 +193,8 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
       description: 'Control de medicamentos actuales',
       icon: FileText,
       path: '/medicamentos',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
+      color: 'text-primary',
+      bgColor: 'bg-muted'
     },
     {
       id: 'visitas',
@@ -197,8 +202,8 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
       description: 'Registro de consultas médicas',
       icon: Calendar,
       path: '/visitas-medicas',
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
+      color: 'text-foreground',
+      bgColor: 'bg-accent'
     },
     {
       id: 'vacunas',
@@ -206,8 +211,8 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
       description: 'Historial de vacunas recibidas',
       icon: Syringe,
       path: '/vacunas',
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50'
+      color: 'text-foreground',
+      bgColor: 'bg-accent'
     },
     {
       id: 'laboratorio',
@@ -215,8 +220,8 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
       description: 'Análisis y pruebas médicas',
       icon: TestTube,
       path: '/resultados-laboratorio',
-      color: 'text-indigo-600',
-      bgColor: 'bg-indigo-50'
+      color: 'text-foreground',
+      bgColor: 'bg-accent'
     },
     {
       id: 'informes',
@@ -224,8 +229,8 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
       description: 'Sube y gestiona informes y documentos',
       icon: FileImage,
       path: '/informes-medicos',
-      color: 'text-gray-600',
-      bgColor: 'bg-gray-50'
+      color: 'text-muted-foreground',
+      bgColor: 'bg-muted'
     }
   ];
 
@@ -233,15 +238,7 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
     navigate(path);
   };
 
-  const handleSignOut = async () => {
-    try {
-      await logout();
-      navigate('/');
-    } catch (error) {
-      logger.error({ error }, 'Error al cerrar sesión');
-    }
-  };
-
+  
   // Calcular estadísticas
   const stats = {
     totalAllergies: medicalData.allergies.length,
@@ -271,50 +268,24 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
 
   return (
     <div className={`container mx-auto px-4 py-8 space-y-6 ${className}`}>
-      {/* Header con navegación */}
-      <div className="flex flex-col gap-4 pb-4 border-b">
-        <div className="flex items-start gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/')}
-            className="text-muted-foreground hover:text-primary h-12 w-12 flex-shrink-0"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground leading-tight flex items-center gap-2">
-              <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
-              <span className="truncate">Historial Médico</span>
-            </h1>
-            <p className="text-muted-foreground text-sm mt-1">
-              {medicalData.profile?.displayName || user?.displayName || 'Usuario'}
-            </p>
-          </div>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleSignOut}
-          className="w-full h-12 justify-start sm:justify-center sm:w-auto"
-        >
-          <LogOut className="h-4 w-4 mr-2 flex-shrink-0" />
-          <span>Cerrar Sesión</span>
-        </Button>
-      </div>
 
       {/* Alerta de migración de alergias si no hay datos */}
       {medicalData.profile && medicalData.allergies.length === 0 && (
-        <Card className="border-blue-200 bg-blue-50">
+        <Card className="border-border bg-muted">
           <CardContent className="p-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-start sm:items-center space-x-3">
-                <AlertTriangle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5 sm:mt-0" />
-                <span className="text-blue-800 text-sm">
+                <AlertTriangle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5 sm:mt-0" />
+                <span className="text-foreground text-sm">
                   Parece que no tienes alergias registradas. ¿Quieres migrar tus alergias públicas a tu perfil médico privado?
                 </span>
               </div>
-              <Button size="sm" variant="outline" onClick={migratePublicAllergies} className="w-full sm:w-auto">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={migratePublicAllergies}
+                className="w-full sm:w-auto min-h-[44px] px-4"
+              >
                 <Download className="h-4 w-4 mr-2" />
                 Migrar Alergias
               </Button>
@@ -325,16 +296,28 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
 
       {/* Panel principal con tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'history' | 'sections' | 'emergency')} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 h-16 p-1 mt-6">
-          <TabsTrigger value="history" className="flex flex-col items-center justify-center gap-1 p-2">
+        <TabsList className="grid w-full grid-cols-3 h-16 p-1">
+          <TabsTrigger
+            value="history"
+            className="flex flex-col items-center justify-center gap-1 p-2 min-h-[44px] min-w-[44px]"
+            aria-label="Ver historial médico"
+          >
             <FileText className="h-4 w-4" />
             <span className="text-xs font-medium">Historial</span>
           </TabsTrigger>
-          <TabsTrigger value="sections" className="flex flex-col items-center justify-center gap-1 p-2">
+          <TabsTrigger
+            value="sections"
+            className="flex flex-col items-center justify-center gap-1 p-2 min-h-[44px] min-w-[44px]"
+            aria-label="Ver secciones médicas"
+          >
             <Menu className="h-4 w-4" />
             <span className="text-xs font-medium">Secciones</span>
           </TabsTrigger>
-          <TabsTrigger value="emergency" className="flex flex-col items-center justify-center gap-1 p-2">
+          <TabsTrigger
+            value="emergency"
+            className="flex flex-col items-center justify-center gap-1 p-2 min-h-[44px] min-w-[44px]"
+            aria-label="Ver información de emergencia"
+          >
             <Phone className="h-4 w-4" />
             <span className="text-xs font-medium">Emergencia</span>
           </TabsTrigger>
@@ -354,7 +337,7 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-blue-600">
+                <CardTitle className="flex items-center gap-2 text-primary">
                   <Home className="h-5 w-5" />
                   Funciones Públicas
                 </CardTitle>
@@ -370,8 +353,8 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
                     description: 'Busca información detallada sobre alergias específicas',
                     icon: Search,
                     path: '/buscarAlergias',
-                    color: 'text-blue-600',
-                    bgColor: 'bg-blue-50'
+                    color: 'text-primary',
+                    bgColor: 'bg-muted'
                   },
                   {
                     id: 'emergencias',
@@ -379,8 +362,8 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
                     description: 'Pasos a seguir en caso de reacción alérgica',
                     icon: AlertTriangle,
                     path: '/emergencias',
-                    color: 'text-red-600',
-                    bgColor: 'bg-red-50'
+                    color: 'text-destructive',
+                    bgColor: 'bg-destructive/10'
                   },
                   {
                     id: 'tabla',
@@ -388,14 +371,23 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
                     description: 'Vista completa de todas las alergias y sus niveles',
                     icon: Table,
                     path: '/tablaAlergias',
-                    color: 'text-green-600',
-                    bgColor: 'bg-green-50'
+                    color: 'text-foreground',
+                    bgColor: 'bg-accent'
                   }
                 ].map((section) => (
                   <div
                     key={section.id}
-                    className={`p-4 rounded-lg border cursor-pointer transition-all ${section.bgColor} hover:shadow-md`}
+                    className={`p-4 rounded-lg border cursor-pointer transition-all ${section.bgColor} hover:shadow-md min-h-[44px] flex items-center`}
                     onClick={() => handleNavigate(section.path)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Ir a ${section.title}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleNavigate(section.path);
+                      }
+                    }}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div className="flex items-center gap-3">
@@ -418,7 +410,7 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
 
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-purple-600">
+                <CardTitle className="flex items-center gap-2 text-primary">
                   <User className="h-5 w-5" />
                   Mi Perfil Médico Privado
                 </CardTitle>
@@ -436,8 +428,17 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
                   return (
                     <div
                       key={section.id}
-                      className={`flex items-center justify-between p-4 rounded-lg border cursor-pointer transition-all ${section.bgColor} hover:shadow-md`}
+                      className={`flex items-center justify-between p-4 rounded-lg border cursor-pointer transition-all ${section.bgColor} hover:shadow-md min-h-[44px]`}
                       onClick={() => handleNavigate(section.path)}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Ir a ${section.title}`}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleNavigate(section.path);
+                        }
+                      }}
                     >
                       <div className="flex items-center space-x-3">
                         <div className={`p-2 rounded-lg ${section.bgColor}`}>
@@ -468,9 +469,9 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
 
         {/* Tab de Emergencia */}
         <TabsContent value="emergency" className="mt-6">
-          <Card className="border-red-200 bg-red-50/50">
+          <Card className="border-destructive bg-destructive/5">
             <CardHeader>
-              <CardTitle className="text-red-700 flex items-center gap-2">
+              <CardTitle className="text-destructive flex items-center gap-2">
                 <Phone className="h-5 w-5" />
                 Información de Emergencia
               </CardTitle>
@@ -478,7 +479,7 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="font-medium text-red-700 mb-2">Contacto de Emergencia:</div>
+                  <div className="font-medium text-destructive mb-2">Contacto de Emergencia:</div>
                   <div className="text-sm space-y-1">
                     <div>📞 {medicalData.profile?.emergencyContact?.name || 'No configurado'}</div>
                     <div>📱 {medicalData.profile?.emergencyContact?.phone || 'No configurado'}</div>
@@ -486,7 +487,7 @@ const MedicalHistoryView: React.FC<MedicalHistoryViewProps> = ({ className }) =>
                   </div>
                 </div>
                 <div>
-                  <div className="font-medium text-red-700 mb-2">Acciones en Emergencia:</div>
+                  <div className="font-medium text-destructive mb-2">Acciones en Emergencia:</div>
                   <div className="text-sm space-y-1">
                     <div>1. Administrar EpiPen si disponible</div>
                     <div>2. Llamar emergencias (112)</div>
